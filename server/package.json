@@ -1,0 +1,23 @@
+{
+  "name": "snake-server",
+  "version": "1.0.0",
+  "description": "Server for the Battle Royale Snake game.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node out/main.js",
+    "compile": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShadowMega1337/battleRoyalSnake.git"
+  },
+  "author": "Snekbois",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/ShadowMega1337/battleRoyalSnake/issues"
+  },
+  "homepage": "https://github.com/ShadowMega1337/battleRoyalSnake#readme",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}

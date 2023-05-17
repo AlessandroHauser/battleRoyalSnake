@@ -1,2 +1,2 @@
-# battleRoyalSnake
+# BattleRoyalSnake
 Battle Royal Snake
