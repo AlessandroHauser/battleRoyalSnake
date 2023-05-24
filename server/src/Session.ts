@@ -1,4 +1,4 @@
-import {Direction, Snake} from "./snake";
+import {Direction, Snake} from "./Snake";
 
 export class Session {
 
