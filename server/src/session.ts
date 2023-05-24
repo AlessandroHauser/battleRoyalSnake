@@ -2,6 +2,8 @@ import {Snake} from "./snake";
 
 export class Session {
 
+    public WIDTHHEIGHT = 50;
+
     private name: string;
     private snakes: Snake[] = [];
     // private apples: Apple[];
@@ -9,6 +11,14 @@ export class Session {
 
     constructor(name: string) {
         this.name = name;
+        this.runGameLoop();
+    }
+
+    private runGameLoop() {
+        for (let i = 0; i < this.snakes.length; i++) {
+            this.snakes[i].move();
+        }
+        setTimeout(this.runGameLoop, 80);
     }
 
     public removePlayer(snake: Snake): void {
