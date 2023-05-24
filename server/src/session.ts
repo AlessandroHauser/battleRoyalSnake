@@ -1,24 +1,27 @@
-import {Snake} from "./snake";
+import {Direction, Snake} from "./snake";
 
 export class Session {
 
     public WIDTHHEIGHT = 50;
 
     private name: string;
-    private snakes: Snake[] = [];
+    private snakes: Snake[];
     // private apples: Apple[];
 
 
     constructor(name: string) {
         this.name = name;
+        this.snakes = [];
         this.runGameLoop();
     }
 
     private runGameLoop() {
-        for (let i = 0; i < this.snakes.length; i++) {
-            this.snakes[i].move();
+        if (this.snakes != undefined) {
+            for (let i = 0; i < this.snakes.length; i++) {
+                this.snakes[i].move();
+            }
         }
-        setTimeout(this.runGameLoop, 80);
+        setTimeout(() => this.runGameLoop(), 200);
     }
 
     public removePlayer(snake: Snake): void {
