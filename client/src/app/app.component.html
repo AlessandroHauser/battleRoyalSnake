@@ -1,5 +1,7 @@
-<header></header>
-<body>
-<h1 class="title">{{title}}</h1>
-</body>
-<footer></footer>
+<main>
+  <router-outlet>
+    <h2 style="text-align: center">{{title}}</h2>
+    <canvas id="myCanvas" width="1000" height="700"></canvas>
+    <button type="button" class="btn btn-secondary" routerLink="/field">Play</button>
+  </router-outlet>
+</main>
