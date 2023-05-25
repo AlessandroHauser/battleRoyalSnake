@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Canvas} from "canvas";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
