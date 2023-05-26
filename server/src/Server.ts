@@ -1,4 +1,5 @@
 import WebSocket, {WebSocketServer} from "ws";
+import {Message} from "./message.interface";
 
 export class Server {
     private static instance: Server;
@@ -22,10 +23,30 @@ export class Server {
         });
     }
 
-    private handleClientMessage(data: WebSocket.RawData, isBinary: boolean): void {
+    private handleClientMessage(socket: WebSocket, data: WebSocket.RawData, isBinary: boolean): void {
         if(!isBinary) {
-            const message: string = data.toString();
+            const message: Message = JSON.parse(data.toString());
+
+            switch (message.name) {
+                case "JoinSession":
+                    this.joinSession(socket);
+                    break;
+                case "UserInput":
+                    console.log(`Client sent input: ${message.data}`)
+                    break;
+            }
         }
+    }
+
+    private joinSession(socket: WebSocket): void {
+
+        const message: Message = {
+            name: "JoinedSession",
+            clientId: "",
+            status: 200,
+            data: ""
+        };
+        socket.send(JSON.stringify(message));
     }
 
     public close(): void {
