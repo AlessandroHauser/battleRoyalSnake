@@ -1,35 +1,55 @@
+import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {Snake} from "./snake";
 
+export enum SessionState {
+	WAITING,
+	STARTING,
+	RUNNING,
+	ENDING
+}
+
 export class Session {
+	public readonly FIELD_SIZE: number = 50;
+	public readonly MAX_PLAYERS: number = 8;
 
-    public WIDTHHEIGHT = 50;
-
-    private name: string;
-    private snakes: Snake[] = [];
-    // private apples: Apple[];
+	private readonly _name: string;
+	private _state: SessionState;
+	private snakes: Snake[];
 
 
-    constructor(name: string) {
-        this.name = name;
-        this.runGameLoop();
-    }
+	constructor() {
+		this._name = uniqueNamesGenerator({
+			dictionaries: [colors, animals],
+			separator: " ",
+			style: "capital"
+		});
+		this._state = SessionState.WAITING;
+		this.snakes = [];
+	}
 
-    private runGameLoop() {
-        for (let i = 0; i < this.snakes.length; i++) {
-            this.snakes[i].move();
-        }
-        setTimeout(this.runGameLoop, 80);
-    }
+	public get name(): string {
+		return this._name;
+	}
 
-    public removePlayer(snake: Snake): void {
-        this.snakes.splice(this.snakes.indexOf(snake), 1);
-    }
+	public isJoinable(): boolean {
+		return this.snakes.length < this.MAX_PLAYERS && this._state == SessionState.WAITING;
+	}
 
-    public addPlayer(snake: Snake): void {
-        this.snakes.push(snake);
-    }
+	public get state(): SessionState {
+		return this._state;
+	}
 
-    public spawnApples(): void {
+	public set state(value: SessionState) {
+		this._state = value;
+	}
 
-    }
+	public removePlayer(snake: Snake): void {
+		snake.session = null;
+		this.snakes.splice(this.snakes.indexOf(snake), 1);
+	}
+
+	public addPlayer(snake: Snake): void {
+		snake.session = this;
+		this.snakes.push(snake);
+	}
 }

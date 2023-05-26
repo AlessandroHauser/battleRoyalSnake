@@ -1,4 +1,3 @@
-import {Server} from "./Server";
+import {Server} from "./server";
 
-const server: Server = Server.Instance;
-server.start(42069);
+Server.Instance.start(42069);
