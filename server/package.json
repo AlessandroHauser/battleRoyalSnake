@@ -18,8 +18,11 @@
   },
   "homepage": "https://github.com/ShadowMega1337/battleRoyalSnake#readme",
   "devDependencies": {
-    "typescript": "^5.0.4",
     "@types/ws": "^8.5.4",
+    "typescript": "^5.0.4",
     "ws": "^8.13.0"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
   }
 }
