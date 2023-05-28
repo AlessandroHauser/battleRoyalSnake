@@ -1,5 +1,5 @@
 import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
-import {Snake} from "./snake";
+import {Direction, Snake} from "./Snake";
 
 export enum SessionState {
 	WAITING,
@@ -30,6 +30,15 @@ export class Session {
 	public get name(): string {
 		return this._name;
 	}
+
+    private runGameLoop() {
+        if (this.snakes != undefined) {
+            for (let i = 0; i < this.snakes.length; i++) {
+                this.snakes[i].move();
+            }
+        }
+        setTimeout(() => this.runGameLoop(), 200);
+    }
 
 	public isJoinable(): boolean {
 		return this.snakes.length < this.MAX_PLAYERS && this._state == SessionState.WAITING;
