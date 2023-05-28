@@ -1,5 +1,5 @@
 import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
-import {Direction, Snake} from "./Snake";
+import {Snake} from "./Snake";
 
 export enum SessionState {
 	WAITING,
