@@ -1,3 +1,3 @@
-import {Server} from "./server";
+import {Server} from "./Server";
 
 Server.Instance.start(42069);
