@@ -9,20 +9,20 @@ export enum Direction {
 
 export class Snake {
 	private readonly _id: string;
-	private head: [number, number] | null;
-	private tail: [number, number][] | null;
-	private direction: Direction | null;
+	private _head: [number, number] | null;
+	private _tail: [number, number][] | null;
+	private _direction: Direction | null;
 	private directionChanged: boolean | null;
 	private _session: Session | null;
-	private alive: boolean | null;
+	private _alive: boolean | null;
 
 	constructor(id: string) {
 		this._id = id;
-		this.head = null;
-		this.tail = null;
-		this.direction = null;
+		this._head = null;
+		this._tail = null;
+		this._direction = null;
 		this.directionChanged = null;
-		this.alive = null;
+		this._alive = null;
 		this._session = null;
 	}
 
@@ -38,84 +38,85 @@ export class Snake {
 		this._session = value;
 	}
 
-    public move(): void {
-        for (let i = this.tail.length -1; i > 0; i--) {
-            this.tail[i] = JSON.parse(JSON.stringify(this.tail[i-1]));
-        }
-        this.tail[0] = JSON.parse(JSON.stringify(this.head));
+	public get head(): [number, number] | null {
+		return this._head;
+	}
 
-        switch(this.direction) {
-            case Direction.UP:
-                this.head[1] -= 1;
-                break;
-            case Direction.LEFT:
-                this.head[0] -= 1;
-                break;
-            case Direction.DOWN:
-                this.head[1] += 1;
-                break;
-            case Direction.RIGHT:
-                this.head[0] += 1;
-                break;
-            default:
-                break;
-        }
-        this.directionChanged = false;
-        this.checkCollision();
+	public get tail(): [number, number][] | null {
+		return this._tail;
+	}
+
+	public addTailSegment() {
+		if(this._tail) {
+			this._tail.push([-1, -1]);
+		}
+	}
+
+	public get direction(): Direction | null {
+		return this._direction;
+	}
+
+	public get alive(): boolean | null {
+		return this._alive;
+	}
+
+	public spawnSnake(): void {
+
+	}
+
+	public move(): void {
+		if(this._head && this._tail) {
+			for (let i = this._tail.length -1; i > 0; i--) {
+				this._tail[i] = JSON.parse(JSON.stringify(this._tail[i-1]));
+			}
+			this._tail[0] = JSON.parse(JSON.stringify(this._head));
+
+			switch(this._direction) {
+				case Direction.UP:
+					this._head[1] -= 1;
+					break;
+				case Direction.LEFT:
+					this._head[0] -= 1;
+					break;
+				case Direction.DOWN:
+					this._head[1] += 1;
+					break;
+				case Direction.RIGHT:
+					this._head[0] += 1;
+					break;
+				default:
+					break;
+			}
+			this.directionChanged = false;
+			this.checkCollision();
+		}
     }
 
     public changeDirection(newDirection: Direction): void {
-        if (!(this.direction == Direction.UP && newDirection == Direction.DOWN) &&
-            !(this.direction == Direction.DOWN && newDirection == Direction.UP) &&
-            !(this.direction == Direction.LEFT && newDirection == Direction.RIGHT) &&
-            !(this.direction == Direction.RIGHT && newDirection == Direction.LEFT) && !this.directionChanged) {
-            this.direction = newDirection;
+        if (!(this._direction == Direction.UP && newDirection == Direction.DOWN) &&
+            !(this._direction == Direction.DOWN && newDirection == Direction.UP) &&
+            !(this._direction == Direction.LEFT && newDirection == Direction.RIGHT) &&
+            !(this._direction == Direction.RIGHT && newDirection == Direction.LEFT) && !this.directionChanged) {
+            this._direction = newDirection;
             this.directionChanged = true;
         }
 
     }
 
-    public spawnSnake(): void {
-
-    }
-
     public checkCollision(): void {
-        if (this.head[0] > this.session?.FIELD_SIZE) {
-            this.head[0] = 0;
-        }
-        if (this.head[1] > this.session?.FIELD_SIZE) {
-            this.head[1] = 0;
-        }
-        if (this.head[0] < 0) {
-            this.head[0] = this.session?.FIELD_SIZE;
-        }
-        if (this.head[1] < 0) {
-            this.head[1] = this.session?.FIELD_SIZE;
-        }
-
-    }
-
-    public addTailSegment() {
-        this.tail.push([-1, -1]);
-    }
-
-    public getId(): string {
-        return this.id;
-    }
-
-    public getHead(): [number, number] {
-        return this.head;
-    }
-
-    public getTail(): [number, number][] {
-        return this.tail;
-    }
-
-    public getAlive(): boolean {
-        return this.alive;
-    }
-
-    public getDirection(): Direction {
-        return this.direction;
+		if(this._head && this.session) {
+			if (this._head[0] > this.session.FIELD_SIZE) {
+				this._head[0] = 0;
+			}
+			if (this._head[1] > this.session.FIELD_SIZE) {
+				this._head[1] = 0;
+			}
+			if (this._head[0] < 0) {
+				this._head[0] = this.session.FIELD_SIZE;
+			}
+			if (this._head[1] < 0) {
+				this._head[1] = this.session.FIELD_SIZE;
+			}
+		}
     }
 }

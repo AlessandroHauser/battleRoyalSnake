@@ -16,7 +16,6 @@ export class Session {
 	private _state: SessionState;
 	private snakes: Snake[];
 
-
 	constructor() {
 		this._name = uniqueNamesGenerator({
 			dictionaries: [colors, animals],
@@ -31,15 +30,6 @@ export class Session {
 		return this._name;
 	}
 
-    private runGameLoop() {
-        if (this.snakes != undefined) {
-            for (let i = 0; i < this.snakes.length; i++) {
-                this.snakes[i].move();
-            }
-        }
-        setTimeout(() => this.runGameLoop(), 200);
-    }
-
 	public isJoinable(): boolean {
 		return this.snakes.length < this.MAX_PLAYERS && this._state == SessionState.WAITING;
 	}
@@ -52,13 +42,22 @@ export class Session {
 		this._state = value;
 	}
 
+	public addPlayer(snake: Snake): void {
+		snake.session = this;
+		this.snakes.push(snake);
+	}
+
 	public removePlayer(snake: Snake): void {
 		snake.session = null;
 		this.snakes.splice(this.snakes.indexOf(snake), 1);
 	}
 
-	public addPlayer(snake: Snake): void {
-		snake.session = this;
-		this.snakes.push(snake);
+	private runGameLoop() {
+		if (this.snakes != undefined) {
+			for (let i = 0; i < this.snakes.length; i++) {
+				this.snakes[i].move();
+			}
+		}
+		setTimeout(() => this.runGameLoop(), 200);
 	}
 }
