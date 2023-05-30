@@ -1,8 +1,8 @@
 import {WebSocket, RawData, WebSocketServer} from "ws";
 import {v4 as uuidV4} from "uuid";
 import {Message} from "./interfaces/message.interface";
-import {Session} from "./session";
-import {Snake} from "./snake";
+import {Session} from "./Session";
+import {Snake} from "./Snake";
 
 export class Server {
 	private static instance: Server;
