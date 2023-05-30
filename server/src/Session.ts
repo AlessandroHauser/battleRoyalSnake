@@ -15,6 +15,13 @@ export class Session {
 	private readonly _name: string;
 	private _state: SessionState;
 	private snakes: Snake[];
+  private currentApples: number;
+  private maxApples: number;
+  private appleRange: number[];
+  private snakeCount: number;
+  private newApples: number;
+
+  // private apples: Apple[];
 
 	constructor() {
 		this._name = uniqueNamesGenerator({
@@ -60,4 +67,18 @@ export class Session {
 		}
 		setTimeout(() => this.runGameLoop(), 200);
 	}
+  
+  public calculateApples(snakeCount, currentApples):number {
+    this.currentApples = currentApples;
+    this.snakeCount = snakeCount;
+    this.maxApples = Math.round(snakeCount * 0.75);
+    this.appleRange = Array.from(Array(this.maxApples - currentApples + 1).keys()).map(x => x + 1);
+    this.newApples = Math.floor(Math.random() * this.appleRange.length);
+
+    return this.newApples;
+  }
+
+  public spawnApples(): void {
+    this.currentApples = this.currentApples + this.newApples;
+  }
 }
