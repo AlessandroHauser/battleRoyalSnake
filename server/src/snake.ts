@@ -97,8 +97,12 @@ export class Snake {
 	}
 
 	private findPosition(): void {
-		this.head = [0, 0];
-		this.tail = [[1, 0], [2, 0]]
+		if (this._session instanceof Session) {
+			this.head = this._session.randomPositionining();
+			let x = this.head[0] + 1;
+			let y = this.head[1];
+			this.tail = [[x, y], [x + 1, y]]
+		}
 		this.direction = Direction.LEFT;
 	}
 
