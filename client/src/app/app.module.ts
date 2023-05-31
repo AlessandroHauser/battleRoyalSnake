@@ -7,6 +7,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FieldComponent } from './components/field/field.component';
 import { StartComponent } from './components/start/start.component';
 import { DeathScreenComponent } from './components/death-screen/death-screen.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { DeathScreenComponent } from './components/death-screen/death-screen.com
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule
+    NgbModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
