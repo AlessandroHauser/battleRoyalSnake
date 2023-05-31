@@ -5,11 +5,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FieldComponent } from './components/field/field.component';
+import { StartComponent } from './components/start/start.component';
+import { DeathScreenComponent } from './components/death-screen/death-screen.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    FieldComponent
+    FieldComponent,
+    StartComponent,
+    DeathScreenComponent
   ],
   imports: [
     BrowserModule,

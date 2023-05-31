@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-field',
-  templateUrl: './field.component.html',
-  styleUrls: ['./field.component.scss']
+  selector: 'app-start',
+  templateUrl: './start.component.html',
+  styleUrls: ['./start.component.scss']
 })
-export class FieldComponent implements OnInit {
+export class StartComponent implements OnInit {
+  title = 'Snake Battleroyale!';
 
   constructor() { }
 
@@ -29,20 +30,6 @@ export class FieldComponent implements OnInit {
         ctx!.fillRect(squareX, squareY, squareSize, squareSize);
       }
     }
-
-    var data = [
-      { x: 2, y: 3 },
-      { x: 5, y: 8 },
-      { x: 10, y: 10}
-    ];
-
-    data.forEach(function(item) {
-      var squareX = item.x * squareSize;
-      var squareY = item.y * squareSize;
-
-      ctx!.fillStyle = "red";
-      ctx!.fillRect(squareX, squareY, squareSize, squareSize);
-    });
   }
 
 }
