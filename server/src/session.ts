@@ -131,12 +131,26 @@ export class Session {
 				for (let i: number = 0; i < this.snakes.length; i++) {
 					let snake = this.snakes[i];
 					let snakePos = snake.head;
+					let snakeTail = snake.tail;
 					if (snakePos == pos) {
 						x = Math.floor(Math.random() * 50);
 						y = Math.floor(Math.random() * 50);
 						i = 0;
 					} else {
 						posFree = true
+					}
+					if (snakeTail != null) {
+						for (let o: number = 0; i < snakeTail.length; i++) {
+							let snakeSeg = snakeTail[i];
+							if (snakeSeg == pos) {
+								x = Math.floor(Math.random() * 50);
+								y = Math.floor(Math.random() * 50);
+								o = 0;
+								posFree = false;
+							} else {
+								posFree = true
+							}
+						}
 					}
 				}
 			} else {
