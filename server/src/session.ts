@@ -117,4 +117,43 @@ export class Session {
 
 		return Math.floor(Math.random() * range.length + 1);
 	}
+
+	public randomPositionining(): [number, number] {
+		let x = Math.floor(Math.random() * 50);
+		let y = Math.floor(Math.random() * 50);
+		let pos = [x, y];
+		let posFree = false;
+		let finished = false;
+
+		while (!finished) {
+
+			if (!posFree) {
+				for (let i: number = 0; i < this.snakes.length; i++) {
+					let snake = this.snakes[i];
+					let snakePos = snake.head;
+					if (snakePos == pos) {
+						x = Math.floor(Math.random() * 50);
+						y = Math.floor(Math.random() * 50);
+						i = 0;
+					} else {
+						posFree = true
+					}
+				}
+			} else {
+				for (let i: number = 0; i < this.apples.length; i++) {
+					let apple = this.apples[i];
+					let applePos = apple.position;
+					if (applePos == pos) {
+						x = Math.floor(Math.random() * 50);
+						y = Math.floor(Math.random() * 50);
+						i = 0;
+						posFree = false;
+					} else {
+						finished = true;
+					}
+				}
+			}
+		}
+		return pos;
+	}
 }

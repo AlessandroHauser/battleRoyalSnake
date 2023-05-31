@@ -6,15 +6,11 @@ export class Apple {
 
     constructor(session: Session) {
         this._session = session;
-        this._position = this.findPosition();
+        this._position = session.randomPositionining();
     }
 
     public get position(): [number, number] {
         return this._position;
     }
 
-    private findPosition(): [number, number] {
-        // TODO: Implement
-        return [0, 0];
-    }
 }
