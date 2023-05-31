@@ -6,13 +6,16 @@ import {SessionState} from "./enums/session-state.enum";
 import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 
 export class Session {
+	get apples(): Apple[] {
+		return this._apples;
+	}
 	public readonly FIELD_SIZE: number = 50;
 	public readonly MAX_PLAYERS: number = 8;
 
 	private readonly _name: string;
 	private _state: SessionState;
 	private snakes: Snake[];
-	private apples: Apple[];
+	private _apples: Apple[];
 
 	constructor() {
 		this._name = uniqueNamesGenerator({
@@ -22,7 +25,7 @@ export class Session {
 		});
 		this._state = SessionState.WAITING;
 		this.snakes = [];
-		this.apples = [];
+		this._apples = [];
 
 		// Start the session
 		this.spawnApples();
@@ -78,7 +81,7 @@ export class Session {
 		return {
 			state: this.state,
 			player: {},
-			apples: this.apples.map((apple: Apple) => { return apple.position; }),
+			apples: this._apples.map((apple: Apple) => { return apple.position; }),
 			snakes: this.snakes.map((snake: Snake): [number, number][] => { return snake.segments })
 		} as GameState;
 	}
@@ -107,13 +110,17 @@ export class Session {
 		let amount: number = this.calculateApples();
 
 		for (let i: number = 0; i < amount; i++) {
-			this.apples.push(new Apple(this));
+			this._apples.push(new Apple(this));
 		}
+	}
+
+	public removeApple(appleToRemove: Apple) {
+		this._apples.splice(this._apples.indexOf(appleToRemove), 1);
 	}
   
 	public calculateApples(): number {
 		let max: number = Math.round(this.snakes.length * 0.75);
-		let range: number[] = Array.from(Array(max - this.apples.length + 1).keys()).map(x => x + 1);
+		let range: number[] = Array.from(Array(max - this._apples.length + 1).keys()).map(x => x + 1);
 
 		return Math.floor(Math.random() * range.length + 1);
 	}
