@@ -5,7 +5,7 @@ import {StartComponent} from "./components/start/start.component";
 import {DeathScreenComponent} from "./components/death-screen/death-screen.component";
 
 const routes: Routes = [
-  { path: 'home', component: StartComponent },
+  { path: '', component: StartComponent },
   { path: 'field', component: FieldComponent },
   { path: 'death', component: DeathScreenComponent },
 ];
