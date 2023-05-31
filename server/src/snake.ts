@@ -1,14 +1,10 @@
-import {Session} from "./Session";
-
-export enum Direction {
-	UP = "up",
-	DOWN = "down",
-	RIGHT = "right",
-	LEFT = "left"
-}
+import {Session} from "./session";
+import {Direction} from "./enums/direction.enum";
+import {WebSocket} from "ws";
 
 export class Snake {
 	private readonly _id: string;
+	private readonly _socket: WebSocket;
 	private _head: [number, number] | null;
 	private _tail: [number, number][] | null;
 	private _direction: Direction | null;
@@ -16,8 +12,9 @@ export class Snake {
 	private _session: Session | null;
 	private _alive: boolean | null;
 
-	constructor(id: string) {
+	constructor(id: string, socket: WebSocket) {
 		this._id = id;
+		this._socket = socket;
 		this._head = null;
 		this._tail = null;
 		this._direction = null;
@@ -30,20 +27,45 @@ export class Snake {
 		return this._id;
 	}
 
+	public get socket(): WebSocket {
+		return this._socket;
+	}
+
 	public get session(): Session | null {
 		return this._session;
 	}
 
 	public set session(value: Session | null) {
 		this._session = value;
+
+		this.alive = true;
+		this.findPosition();
 	}
 
 	public get head(): [number, number] | null {
 		return this._head;
 	}
 
+	private set head(value: [number, number] | null) {
+		this._head = value;
+	}
+
 	public get tail(): [number, number][] | null {
 		return this._tail;
+	}
+
+	private set tail(value: [number, number][] | null) {
+		this._tail = value;
+	}
+
+	public get segments(): [number, number][] {
+		if (this.head) {
+			if (this.tail) {
+				return [this.head, ...this.tail];
+			}
+			return [this.head];
+		}
+		return [];
 	}
 
 	public addTailSegment() {
@@ -56,12 +78,26 @@ export class Snake {
 		return this._direction;
 	}
 
+	private set direction(value: Direction | null) {
+		this._direction = value;
+	}
+
 	public get alive(): boolean | null {
 		return this._alive;
 	}
 
+	private set alive(value: boolean | null) {
+		this._alive = value;
+	}
+
 	public spawnSnake(): void {
 
+	}
+
+	private findPosition(): void {
+		this.head = [0, 0];
+		this.tail = [[1, 0], [2, 0]]
+		this.direction = Direction.LEFT;
 	}
 
 	public move(): void {
