@@ -1,8 +1,9 @@
-import {WebSocket, RawData, WebSocketServer} from "ws";
-import {v4 as uuidV4} from "uuid";
+import {Session} from "./session";
+import {Snake} from "./snake";
 import {Message} from "./interfaces/message.interface";
-import {Session} from "./Session";
-import {Snake} from "./Snake";
+import {v4 as uuidV4} from "uuid";
+import {RawData, WebSocket, WebSocketServer} from "ws";
+import {Direction} from "./enums/direction.enum";
 
 export class Server {
 	private static instance: Server;
@@ -36,7 +37,7 @@ export class Server {
 						this.joinSession(socket);
 						break;
 					case "UserInput":
-						console.log(`Client sent input: ${message.data}`)
+						this.receiveInput(message);
 						break;
 				}
 			} catch (ignored) {}
@@ -57,12 +58,13 @@ export class Server {
 			this.sessions.push(joinedSession);
 		}
 
-		let snake: Snake = new Snake(uuidV4());
+		let snake: Snake = new Snake(uuidV4(), socket);
 		joinedSession.addPlayer(snake);
 
 		const message: Message = {
 			name: "JoinedSession",
 			clientId: snake.id,
+			sessionName: joinedSession.name,
 			status: 200,
 			data: {
 				session: {
@@ -72,6 +74,41 @@ export class Server {
 			}
 		};
 		socket.send(JSON.stringify(message));
+	}
+
+	private receiveInput(message: Message): void {
+		let direction: Direction | undefined = undefined;
+
+		switch (message.data.toString().toLowerCase()) {
+			case "w":
+				direction = Direction.UP;
+				break;
+			case "a":
+				direction = Direction.LEFT;
+				break;
+			case "s":
+				direction = Direction.DOWN;
+				break;
+			case "d":
+				direction = Direction.RIGHT;
+				break;
+			default:
+				break;
+		}
+
+		if (direction && message.sessionName && message.clientId) {
+			this.getSessionWithName(message.sessionName)?.getPlayer(message.clientId)?.changeDirection(direction);
+		}
+	}
+
+	private getSessionWithName(name: string): Session | null {
+		for (let session of this.sessions) {
+			if (session.name === name) {
+				return session;
+			}
+		}
+
+		return null;
 	}
 
 	public close(): void {
