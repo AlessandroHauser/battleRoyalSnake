@@ -128,7 +128,7 @@ export class Session {
 	public randomPositionining(): [number, number] {
 		let x = Math.floor(Math.random() * 50);
 		let y = Math.floor(Math.random() * 50);
-		let pos = [x, y];
+		let pos:[number, number] = [x, y];
 		let posFree = false;
 		let finished = false;
 
