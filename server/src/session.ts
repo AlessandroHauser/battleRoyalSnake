@@ -6,7 +6,8 @@ import {SessionState} from "./enums/session-state.enum";
 import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 
 export class Session {
-	public readonly FIELD_SIZE: number = 50;
+	public readonly FIELD_WIDTH: number = 100;
+	public readonly FIELD_HEIGHT: number = 70;
 	public readonly MAX_PLAYERS: number = 8;
 
 	private readonly _name: string;

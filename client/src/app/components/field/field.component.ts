@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {GameState} from "../../interfaces/game-state";
 
 @Component({
   selector: 'app-field',
