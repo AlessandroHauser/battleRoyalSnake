@@ -44,5 +44,4 @@ export class FieldComponent implements OnInit {
       ctx!.fillRect(squareX, squareY, squareSize, squareSize);
     });
   }
-
 }

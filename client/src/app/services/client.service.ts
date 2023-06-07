@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Message} from "../interfaces/message";
+import {Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +17,11 @@ export class ClientService {
     this.socket.onmessage = callbackFunction;
   }
 
-  public joinSession(): void {
+  public sendJoinSession(): void {
     if (this.socket) {
       const message: Message = {
         name: "JoinSession"
       };
-
       this.socket.send(JSON.stringify(message));
     }
   }
