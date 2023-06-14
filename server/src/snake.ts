@@ -59,11 +59,13 @@ export class Snake {
 	}
 
 	public get segments(): [number, number][] {
-		if (this.head) {
-			if (this.tail) {
-				return [this.head, ...this.tail];
+		if (this._alive) {
+			if (this.head) {
+				if (this.tail) {
+					return [this.head, ...this.tail];
+				}
+				return [this.head];
 			}
-			return [this.head];
 		}
 		return [];
 	}
@@ -95,8 +97,12 @@ export class Snake {
 	}
 
 	private findPosition(): void {
-		this.head = [0, 0];
-		this.tail = [[1, 0], [2, 0]]
+		if (this._session instanceof Session) {
+			this.head = this._session.getRandomPosition();
+			let x = this.head[0] + 1;
+			let y = this.head[1];
+			this.tail = [[x, y], [x + 1, y]]
+		}
 		this.direction = Direction.LEFT;
 	}
 
@@ -152,6 +158,34 @@ export class Snake {
 			}
 			if (this._head[1] < 0) {
 				this._head[1] = this.session.FIELD_HEIGHT - 1;
+			}
+
+			// check if snake should eat apple
+			if (this._session && this._session.apples) {
+				for (let apple of this._session.apples) {
+					if (this._head == apple.position) {
+						this._session.removeApple(apple);
+						this._session.spawnApples();
+						this.addTailSegment();
+					}
+				}
+			}
+
+
+			// check if snake collides with itself
+			let collided = false;
+			if (this._tail != null) {
+				for (let i = 0; i < this._tail.length; i++) {
+					if (this._head == this._tail[i]) {
+						collided = true;
+					}
+				}
+			}
+
+			// implement collision with other snakes here
+
+			if (collided) {
+				this._alive = false;
 			}
 		}
     }

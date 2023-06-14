@@ -13,7 +13,7 @@ export class Session {
 	private readonly _name: string;
 	private _state: SessionState;
 	private snakes: Snake[];
-	private apples: Apple[];
+	private _apples: Apple[];
 
 	constructor() {
 		this._name = uniqueNamesGenerator({
@@ -23,11 +23,11 @@ export class Session {
 		});
 		this._state = SessionState.WAITING;
 		this.snakes = [];
-		this.apples = [];
+		this._apples = [];
 
 		// Start the session
 		this.spawnApples();
-		this.runGameLoop();
+		setInterval(_ => this.runGameLoop(), 200);
 	}
 
 	public get name(): string {
@@ -65,6 +65,10 @@ export class Session {
 		snake.session = null;
 		this.snakes.splice(this.snakes.indexOf(snake), 1);
 	}
+  
+  public get apples(): Apple[] {
+		return this._apples;
+	}
 
 	private runGameLoop(): void {
 		for (let i: number = 0; i < this.snakes.length; i++) {
@@ -72,14 +76,13 @@ export class Session {
 		}
 
 		this.broadcastGameState();
-		setTimeout(() => this.runGameLoop(), 200);
 	}
 
 	private getGameState(): GameState {
 		return {
 			state: this.state,
 			player: {},
-			apples: this.apples.map((apple: Apple) => { return apple.position; }),
+			apples: this._apples.map((apple: Apple) => { return apple.position; }),
 			snakes: this.snakes.map((snake: Snake): [number, number][] => { return snake.segments })
 		} as GameState;
 	}
@@ -105,17 +108,72 @@ export class Session {
 	}
 
 	public spawnApples(): void {
-		let amount: number = this.calculateApples();
-
-		for (let i: number = 0; i < amount; i++) {
-			this.apples.push(new Apple(this));
+		for (let i: number = this.calculateApples(); i >= 0; i--) {
+			this._apples.push(new Apple(this.getRandomPosition()));
 		}
+	}
+
+	public removeApple(appleToRemove: Apple) {
+		this._apples.splice(this._apples.indexOf(appleToRemove), 1);
 	}
   
 	public calculateApples(): number {
-		let max: number = Math.round(this.snakes.length * 0.75);
-		let range: number[] = Array.from(Array(max - this.apples.length + 1).keys()).map(x => x + 1);
+		return Math.floor(
+			Math.random() *
+			Math.round(this.snakes.length * 0.75) - this._apples.length + 1
+		);
+	}
 
-		return Math.floor(Math.random() * range.length + 1);
+	public getRandomPosition(): [number, number] {
+		let x = Math.floor(Math.random() * 50);
+		let y = Math.floor(Math.random() * 50);
+		let pos:[number, number] = [x, y];
+		let posFree = false;
+		let finished = false;
+
+		while (!finished) {
+
+			if (!posFree) {
+				for (let i: number = 0; i < this.snakes.length; i++) {
+					let snake = this.snakes[i];
+					let snakePos = snake.head;
+					let snakeTail = snake.tail;
+					if (snakePos == pos) {
+						x = Math.floor(Math.random() * 50);
+						y = Math.floor(Math.random() * 50);
+						i = 0;
+					} else {
+						posFree = true
+					}
+					if (snakeTail != null) {
+						for (let o: number = 0; i < snakeTail.length; i++) {
+							let snakeSeg = snakeTail[i];
+							if (snakeSeg == pos) {
+								x = Math.floor(Math.random() * 50);
+								y = Math.floor(Math.random() * 50);
+								o = 0;
+								posFree = false;
+							} else {
+								posFree = true
+							}
+						}
+					}
+				}
+			} else {
+				for (let i: number = 0; i < this.apples.length; i++) {
+					let apple = this.apples[i];
+					let applePos = apple.position;
+					if (applePos == pos) {
+						x = Math.floor(Math.random() * 50);
+						y = Math.floor(Math.random() * 50);
+						i = 0;
+						posFree = false;
+					} else {
+						finished = true;
+					}
+				}
+			}
+		}
+		return pos;
 	}
 }
