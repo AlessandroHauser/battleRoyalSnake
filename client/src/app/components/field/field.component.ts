@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {GameState} from "../../interfaces/game-state";
 
 @Component({
   selector: 'app-field',
@@ -6,43 +7,64 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./field.component.scss']
 })
 export class FieldComponent implements OnInit {
+  public readonly FIELD_WIDTH = 100;
+  public readonly FIELD_HEIGHT = 70;
+  public readonly SQUARE_SIZE = 10;
 
-  constructor() { }
+  private canvas: HTMLCanvasElement | undefined;
+  private context: CanvasRenderingContext2D | null | undefined;
+
+  @Input()
+  gameState: GameState | null = null;
+
+  constructor() {
+  }
 
   ngOnInit(): void {
-    var canvas = <HTMLCanvasElement> document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
+    this.canvas = <HTMLCanvasElement>document.getElementById("field");
+    this.canvas.width = this.FIELD_WIDTH * this.SQUARE_SIZE;
+    this.canvas.height = this.FIELD_HEIGHT * this.SQUARE_SIZE;
+    this.context = this.canvas.getContext("2d");
 
-    var squareSize = 20;
+    this.drawField();
+  }
 
-    var squaresHorizontal = 100;
-    var squaresVertical = 70;
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.canvas && this.context) {
+      this.draw(changes["gameState"].currentValue)
+    }
+  }
 
-    for (var x = 0; x < squaresHorizontal; x++) {
-      for (var y = 0; y < squaresVertical; y++) {
-        var squareX = x * squareSize;
-        var squareY = y * squareSize;
+  public draw(gameState: GameState): void {
+    this.drawField();
+    if (gameState) {
+      gameState.snakes.forEach((snake: [number, number][]): void => {
+        this.drawSnake(snake);
+      });
+      this.drawApples(gameState.apples);
+    }
+  }
 
-        var isLightGreen = (x + y) % 2 === 0;
-
-        ctx!.fillStyle = isLightGreen ? "#a2d149" : "#aad751";
-        ctx!.fillRect(squareX, squareY, squareSize, squareSize);
+  private drawField(): void {
+    for (let x = 0; x < this.FIELD_WIDTH; x++) {
+      for (let y = 0; y < this.FIELD_HEIGHT; y++) {
+        this.context!.fillStyle = (x + y) % 2 == 0 ? "#A2D149" : "#AAD751";
+        this.context!.fillRect(x * this.SQUARE_SIZE, y * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
       }
     }
+  }
 
-    var data = [
-      { x: 2, y: 3 },
-      { x: 5, y: 8 },
-      { x: 10, y: 10}
-    ];
-
-    data.forEach(function(item) {
-      var squareX = item.x * squareSize;
-      var squareY = item.y * squareSize;
-
-      ctx!.fillStyle = "red";
-      ctx!.fillRect(squareX, squareY, squareSize, squareSize);
+  private drawApples(apples: [number, number][]): void {
+    apples.forEach((apple: [number, number]): void => {
+      this.context!.fillStyle = "red";
+      this.context!.fillRect(apple[0] * this.SQUARE_SIZE, apple[1] * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
     });
   }
 
+  private drawSnake(snake: [number, number][]): void {
+    snake.forEach((segment: [number, number]): void => {
+      this.context!.fillStyle = "darkgreen";
+      this.context!.fillRect(segment[0] * this.SQUARE_SIZE, segment[1] * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
+    });
+  }
 }

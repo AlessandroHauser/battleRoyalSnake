@@ -1,36 +1,48 @@
 import {Injectable} from '@angular/core';
 import {Message} from "../interfaces/message";
+import {Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
+  public messageSubject: Subject<Message> = new Subject<Message>();
   private socket: WebSocket | null;
 
   constructor() {
     this.socket = null;
   }
 
-  public connect(address: string, callbackFunction: ((event: MessageEvent) => void)): void {
+  public connect(address: string): void {
     this.socket = new WebSocket(address);
-    this.socket.onmessage = callbackFunction;
+    this.socket.onmessage = this.onMessage.bind(this);
   }
 
-  public joinSession(): void {
+  private onMessage(event: MessageEvent): void {
+    const message: Message = JSON.parse(event.data);
+    this.messageSubject.next(message);
+  }
+
+  public sendJoinSession(): void {
     if (this.socket) {
       const message: Message = {
         name: "JoinSession"
       };
-
       this.socket.send(JSON.stringify(message));
     }
   }
 
-  public userInput(input: string): void {
+  public sendUserInput(input: string, id: string, session: string): void {
     if (this.socket) {
       const message: Message = {
         name: "UserInput",
-        data: input
+        clientId: id,
+        sessionName: session,
+        status: 200,
+        data: {
+          type: "ChangeDirection",
+          key: input
+        }
       }
       this.socket.send(JSON.stringify(message))
     }

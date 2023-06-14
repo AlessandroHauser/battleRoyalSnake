@@ -1,35 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject} from '@angular/core';
+import {ClientService} from "../../services/client.service";
+import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-start',
   templateUrl: './start.component.html',
-  styleUrls: ['./start.component.scss']
+  styleUrls: ['./start.component.scss'],
 })
-export class StartComponent implements OnInit {
-  title = 'Snake Battleroyale!';
+export class StartComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { clientService: ClientService }) {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-    var canvas = <HTMLCanvasElement> document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-
-    var squareSize = 20;
-
-    var squaresHorizontal = 100;
-    var squaresVertical = 70;
-
-    for (var x = 0; x < squaresHorizontal; x++) {
-      for (var y = 0; y < squaresVertical; y++) {
-        var squareX = x * squareSize;
-        var squareY = y * squareSize;
-
-        var isLightGreen = (x + y) % 2 === 0;
-
-        ctx!.fillStyle = isLightGreen ? "#a2d149" : "#aad751";
-        ctx!.fillRect(squareX, squareY, squareSize, squareSize);
-      }
-    }
+  public start(): void {
+    this.data.clientService.sendJoinSession();
   }
-
 }
