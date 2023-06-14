@@ -24,18 +24,19 @@ export class AppComponent implements OnInit {
     this.gameState = null;
   }
 
-  openDialog() {
-    this.dialog.open(StartComponent, {
+  openStartDialog() {
+    this.startDialog.open(StartComponent, {
+      disableClose: true,
       data: {
         clientService: this.clientService,
-      },
+      }
     });
   }
 
   ngOnInit() {
     this.clientService.connect("ws://localhost:42069");
     this.clientService.messageSubject.subscribe((message: Message) => this.handleMessage(message));
-    this.openDialog()
+    this.openStartDialog()
   }
 
   public handleMessage(message: Message): void {
