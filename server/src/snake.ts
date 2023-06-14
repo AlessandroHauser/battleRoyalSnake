@@ -38,7 +38,7 @@ export class Snake {
 	public set session(value: Session | null) {
 		this._session = value;
 
-		this.alive = true;
+		this._alive = true;
 		this.findPosition();
 	}
 
@@ -46,16 +46,8 @@ export class Snake {
 		return this._head;
 	}
 
-	private set head(value: [number, number] | null) {
-		this._head = value;
-	}
-
 	public get tail(): [number, number][] | null {
 		return this._tail;
-	}
-
-	private set tail(value: [number, number][] | null) {
-		this._tail = value;
 	}
 
 	public get segments(): [number, number][] {
@@ -80,57 +72,56 @@ export class Snake {
 		return this._direction;
 	}
 
-	private set direction(value: Direction | null) {
-		this._direction = value;
-	}
-
 	public get alive(): boolean | null {
 		return this._alive;
 	}
 
-	private set alive(value: boolean | null) {
-		this._alive = value;
-	}
-
-	public spawnSnake(): void {
-
-	}
-
 	private findPosition(): void {
 		if (this._session instanceof Session) {
-			this.head = this._session.getRandomPosition();
-			let x = this.head[0] + 1;
-			let y = this.head[1];
-			this.tail = [[x, y], [x + 1, y]]
+			this._head = this._session.getRandomPosition();
+			let x = this._head[0] + 1;
+			let y = this._head[1];
+			this._tail = [[x, y], [x + 1, y]]
 		}
-		this.direction = Direction.LEFT;
+		this._direction = Direction.LEFT;
 	}
 
-	public move(): void {
+	public move(fieldWidth: number, fieldHeight: number): void {
 		if(this._head && this._tail) {
 			for (let i = this._tail.length -1; i > 0; i--) {
-				this._tail[i] = JSON.parse(JSON.stringify(this._tail[i-1]));
+				this._tail[i] = this._tail[i-1].slice() as [number, number];
 			}
-			this._tail[0] = JSON.parse(JSON.stringify(this._head));
+			this._tail[0] = this._head.slice() as [number, number];
 
 			switch(this._direction) {
 				case Direction.UP:
 					this._head[1] -= 1;
+					if (this._head[0] < 0) {
+						this._head[0] = fieldWidth - 1;
+					}
 					break;
 				case Direction.LEFT:
 					this._head[0] -= 1;
+					if (this._head[1] < 0) {
+						this._head[1] = fieldHeight - 1;
+					}
 					break;
 				case Direction.DOWN:
 					this._head[1] += 1;
+					if (this._head[1] >= fieldHeight) {
+						this._head[1] = 0;
+					}
 					break;
 				case Direction.RIGHT:
 					this._head[0] += 1;
+					if (this._head[0] >= fieldWidth) {
+						this._head[0] = 0;
+					}
 					break;
 				default:
 					break;
 			}
 			this.directionChanged = false;
-			this.checkCollision();
 		}
     }
 
@@ -145,48 +136,39 @@ export class Snake {
 
     }
 
-    public checkCollision(): void {
-		if(this._head && this.session) {
-			if (this._head[0] >= this.session.FIELD_WIDTH) {
-				this._head[0] = 0;
-			}
-			if (this._head[1] >= this.session.FIELD_HEIGHT) {
-				this._head[1] = 0;
-			}
-			if (this._head[0] < 0) {
-				this._head[0] = this.session.FIELD_WIDTH - 1;
-			}
-			if (this._head[1] < 0) {
-				this._head[1] = this.session.FIELD_HEIGHT - 1;
-			}
-
-			// check if snake should eat apple
-			if (this._session && this._session.apples) {
-				for (let apple of this._session.apples) {
-					if (this._head == apple.position) {
-						this._session.removeApple(apple);
-						this._session.spawnApples();
-						this.addTailSegment();
-					}
+	public checkSelfCollision(): boolean {
+		if (this.head && this.tail) {
+			for (let segment of this.tail) {
+				if (segment == this.head) {
+					this._alive = false;
+					return true;
 				}
-			}
-
-
-			// check if snake collides with itself
-			let collided = false;
-			if (this._tail != null) {
-				for (let i = 0; i < this._tail.length; i++) {
-					if (this._head == this._tail[i]) {
-						collided = true;
-					}
-				}
-			}
-
-			// implement collision with other snakes here
-
-			if (collided) {
-				this._alive = false;
 			}
 		}
-    }
+		return false;
+	}
+
+	public checkSnakeCollision(snake: [number, number][]): boolean {
+		if (this.head) {
+			for (let segment of snake) {
+				if (segment == this.head) {
+					this._alive = false;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public checkAppleCollision(apples: [number, number][]): number {
+		if (this.head) {
+			for (let i: number = apples.length; i >= 0; i--) {
+				if (apples[i] == this.head) {
+					this.addTailSegment();
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
 }

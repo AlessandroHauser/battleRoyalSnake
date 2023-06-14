@@ -12,8 +12,8 @@ export class Session {
 
 	private readonly _name: string;
 	private _state: SessionState;
-	private snakes: Snake[];
-	private _apples: Apple[];
+	private readonly snakes: Snake[];
+	private readonly _apples: Apple[];
 
 	constructor() {
 		this._name = uniqueNamesGenerator({
@@ -66,25 +66,46 @@ export class Session {
 		this.snakes.splice(this.snakes.indexOf(snake), 1);
 	}
   
-  public get apples(): Apple[] {
+  	public get apples(): Apple[] {
 		return this._apples;
 	}
 
-	private runGameLoop(): void {
-		for (let i: number = 0; i < this.snakes.length; i++) {
-			this.snakes[i].move();
+	public spawnApples(): void {
+		for (let i: number = this.calculateApples(); i >= 0; i--) {
+			this._apples.push(new Apple(this.getRandomPosition()));
 		}
+	}
+
+	public calculateApples(): number {
+		return Math.floor(
+			Math.random() *
+			Math.round(this.snakes.length * 0.75) - this._apples.length + 1
+		);
+	}
+
+	public removeApple(appleToRemove: Apple) {
+		this._apples.splice(this._apples.indexOf(appleToRemove), 1);
+	}
+
+	private runGameLoop(): void {
+		this.snakes.forEach((snake: Snake) => snake.move(this.FIELD_WIDTH, this.FIELD_HEIGHT));
+		this.snakes.forEach((snake: Snake) => this.checkCollision(snake));
 
 		this.broadcastGameState();
 	}
 
-	private getGameState(): GameState {
-		return {
-			state: this.state,
-			player: {},
-			apples: this._apples.map((apple: Apple) => { return apple.position; }),
-			snakes: this.snakes.map((snake: Snake): [number, number][] => { return snake.segments })
-		} as GameState;
+	private checkCollision(snake: Snake): void {
+		snake.checkSelfCollision();
+		this.snakes.forEach((_snake: Snake) => {
+			if (snake != _snake) {
+				snake.checkSnakeCollision(_snake.segments);
+			}
+		})
+		let eatenApple: number = snake.checkAppleCollision(this.apples.map((apple: Apple) => apple.position));
+		if (eatenApple != -1) {
+			this.apples.splice(eatenApple);
+			this.spawnApples();
+		}
 	}
 
 	private broadcastGameState(): void {
@@ -107,21 +128,13 @@ export class Session {
 		}
 	}
 
-	public spawnApples(): void {
-		for (let i: number = this.calculateApples(); i >= 0; i--) {
-			this._apples.push(new Apple(this.getRandomPosition()));
-		}
-	}
-
-	public removeApple(appleToRemove: Apple) {
-		this._apples.splice(this._apples.indexOf(appleToRemove), 1);
-	}
-  
-	public calculateApples(): number {
-		return Math.floor(
-			Math.random() *
-			Math.round(this.snakes.length * 0.75) - this._apples.length + 1
-		);
+	private getGameState(): GameState {
+		return {
+			state: this.state,
+			player: {},
+			apples: this._apples.map((apple: Apple) => { return apple.position; }),
+			snakes: this.snakes.map((snake: Snake): [number, number][] => { return snake.segments })
+		} as GameState;
 	}
 
 	public getRandomPosition(): [number, number] {
