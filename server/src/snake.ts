@@ -98,7 +98,7 @@ export class Snake {
 
 	private findPosition(): void {
 		if (this._session instanceof Session) {
-			this.head = this._session.randomPositionining();
+			this.head = this._session.getRandomPosition();
 			let x = this.head[0] + 1;
 			let y = this.head[1];
 			this.tail = [[x, y], [x + 1, y]]
@@ -162,8 +162,7 @@ export class Snake {
 
 			// check if snake should eat apple
 			if (this._session && this._session.apples) {
-				for (let i = 0; i < this._session.apples.length; i++) {
-					let apple = this._session.apples[i];
+				for (let apple of this._session.apples) {
 					if (this._head == apple.position) {
 						this._session.removeApple(apple);
 						this._session.spawnApples();

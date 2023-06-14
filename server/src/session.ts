@@ -29,7 +29,7 @@ export class Session {
 
 		// Start the session
 		this.spawnApples();
-		this.runGameLoop();
+		setInterval(_ => this.runGameLoop(), 200);
 	}
 
 	public get name(): string {
@@ -74,7 +74,6 @@ export class Session {
 		}
 
 		this.broadcastGameState();
-		setTimeout(() => this.runGameLoop(), 200);
 	}
 
 	private getGameState(): GameState {
@@ -107,10 +106,8 @@ export class Session {
 	}
 
 	public spawnApples(): void {
-		let amount: number = this.calculateApples();
-
-		for (let i: number = 0; i < amount; i++) {
-			this._apples.push(new Apple(this));
+		for (let i: number = this.calculateApples(); i >= 0; i--) {
+			this._apples.push(new Apple(this.getRandomPosition()));
 		}
 	}
 
@@ -119,13 +116,13 @@ export class Session {
 	}
   
 	public calculateApples(): number {
-		let max: number = Math.round(this.snakes.length * 0.75);
-		let range: number[] = Array.from(Array(max - this._apples.length + 1).keys()).map(x => x + 1);
-
-		return Math.floor(Math.random() * range.length + 1);
+		return Math.floor(
+			Math.random() *
+			Math.round(this.snakes.length * 0.75) - this._apples.length + 1
+		);
 	}
 
-	public randomPositionining(): [number, number] {
+	public getRandomPosition(): [number, number] {
 		let x = Math.floor(Math.random() * 50);
 		let y = Math.floor(Math.random() * 50);
 		let pos:[number, number] = [x, y];

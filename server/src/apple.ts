@@ -1,12 +1,8 @@
-import {Session} from "./session";
-
 export class Apple {
-    private _session: Session;
-    private _position: [number, number];
+    private readonly _position: [number, number];
 
-    constructor(session: Session) {
-        this._session = session;
-        this._position = session.randomPositionining();
+    constructor(position: [number, number]) {
+        this._position = position;
     }
 
     public get position(): [number, number] {
