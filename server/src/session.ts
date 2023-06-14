@@ -140,18 +140,21 @@ export class Session {
 					let snakePos = snake.head;
 					let snakeTail = snake.tail;
 					if (snakePos == pos) {
-						x = Math.floor(Math.random() * 50);
-						y = Math.floor(Math.random() * 50);
+						x = Math.floor(Math.random() * this.FIELD_WIDTH);
+						y = Math.floor(Math.random() * this.FIELD_HEIGHT);
 						i = 0;
-					} else {
+					} /*if (snakePos + 3 == pos) {
+
+					}*/
+					else {
 						posFree = true
 					}
 					if (snakeTail != null) {
 						for (let o: number = 0; i < snakeTail.length; i++) {
 							let snakeSeg = snakeTail[i];
 							if (snakeSeg == pos) {
-								x = Math.floor(Math.random() * 50);
-								y = Math.floor(Math.random() * 50);
+								x = Math.floor(Math.random() * this.FIELD_WIDTH);
+								y = Math.floor(Math.random() * this.FIELD_HEIGHT);
 								o = 0;
 								posFree = false;
 							} else {
@@ -165,8 +168,8 @@ export class Session {
 					let apple = this.apples[i];
 					let applePos = apple.position;
 					if (applePos == pos) {
-						x = Math.floor(Math.random() * 50);
-						y = Math.floor(Math.random() * 50);
+						x = Math.floor(Math.random() * this.FIELD_WIDTH);
+						y = Math.floor(Math.random() * this.FIELD_HEIGHT);
 						i = 0;
 						posFree = false;
 					} else {
