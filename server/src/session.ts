@@ -14,6 +14,7 @@ export class Session {
 	private _state: SessionState;
 	private snakes: Snake[];
 	private _apples: Apple[];
+	private gameLoopId: number;
 
 	constructor() {
 		this._name = uniqueNamesGenerator({
@@ -27,7 +28,7 @@ export class Session {
 
 		// Start the session
 		this.spawnApples();
-		setInterval(_ => this.runGameLoop(), 200);
+		this.gameLoopId = setInterval(_ => this.runGameLoop(), 200);
 	}
 
 	public get name(): string {
@@ -175,5 +176,27 @@ export class Session {
 			}
 		}
 		return pos;
+	}
+	public autoStart() {
+		let shouldCount = false;
+		let countDown = 10;
+		if (this.snakes.length >= 4) {
+			shouldCount = true;
+			while (countDown > 0) {
+				setTimeout(() => {}, 1000);
+				countDown--;
+			}
+			clearInterval(this.gameLoopId);
+
+			this.spawnApples()
+			for (let i: number = 0; i < this.snakes.length; i++) {
+				this.snakes[i].spawnSnake();
+			}
+
+			this.runGameLoop();
+			setTimeout(() => {}, 2000);
+
+			this.gameLoopId = setInterval(_ => this.runGameLoop(), 200);
+		}
 	}
 }
