@@ -39,7 +39,7 @@ export class FieldComponent implements OnInit {
     this.drawField();
     if (gameState) {
       gameState.snakes.forEach((snake: [number, number][]): void => {
-        this.drawSnake(snake);
+        this.drawSnake(snake, gameState.player.position);
       });
       this.drawApples(gameState.apples);
     }
@@ -61,9 +61,17 @@ export class FieldComponent implements OnInit {
     });
   }
 
-  private drawSnake(snake: [number, number][]): void {
+  private drawSnake(snake: [number, number][], playerHeadPos: [number, number]): void {
     snake.forEach((segment: [number, number]): void => {
       this.context!.fillStyle = "darkgreen";
+
+      if (snake.indexOf(segment) === 0) {
+        this.context!.fillStyle = "lightgreen";
+        if (segment[0] === playerHeadPos[0] && segment[1] === playerHeadPos[1]) {
+          this.context!.fillStyle = "yellow";
+        }
+      }
+
       this.context!.fillRect(segment[0] * this.SQUARE_SIZE, segment[1] * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
     });
   }

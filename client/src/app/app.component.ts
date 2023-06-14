@@ -5,6 +5,7 @@ import {Message} from "./interfaces/message";
 import {GameState} from "./interfaces/game-state";
 import {MatDialog} from "@angular/material/dialog";
 import {StartComponent} from "./components/start/start.component";
+import {DeathScreenComponent} from "./components/death-screen/death-screen.component";
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,7 @@ export class AppComponent implements OnInit {
   public session: string | null;
   public gameState: GameState | null;
 
-  constructor(public clientService: ClientService, public dialog: MatDialog) {
+  constructor(public clientService: ClientService, public startDialog: MatDialog, public deathDialog: MatDialog) {
     this.title = "Snake Battleroyale!";
     this.id = null;
     this.session = null;
@@ -28,8 +29,15 @@ export class AppComponent implements OnInit {
     this.startDialog.open(StartComponent, {
       disableClose: true,
       data: {
+        comp: this,
         clientService: this.clientService,
       }
+    });
+  }
+
+  openDeathDialog(): void {
+    this.deathDialog.open(DeathScreenComponent, {
+      disableClose: true
     });
   }
 
@@ -39,13 +47,15 @@ export class AppComponent implements OnInit {
     this.openStartDialog()
   }
 
-  public handleMessage(message: Message): void {
+  private handleMessage(message: Message): void {
     switch (message.name) {
       case "JoinedSession":
         this.id = message.clientId!;
         this.session = message.sessionName!;
         break;
       case "GameState":
+        if(!message.data.player.alive)
+          this.openDeathDialog();
         this.gameState = message.data;
         break;
       default:
