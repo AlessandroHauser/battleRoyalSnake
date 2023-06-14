@@ -27,7 +27,7 @@ export class Session {
 
 		// Start the session
 		this.spawnApples();
-		setInterval(_ => this.runGameLoop(), 200);
+		setInterval(() => this.runGameLoop(), 200);
 	}
 
 	public get name(): string {
@@ -57,12 +57,13 @@ export class Session {
 	}
 
 	public addPlayer(snake: Snake): void {
-		snake.session = this;
 		this.snakes.push(snake);
+		snake.setPosition(this.getSnakePosition());
+		snake.alive = true;
 	}
 
 	public removePlayer(snake: Snake): void {
-		snake.session = null;
+		snake.alive = false;
 		this.snakes.splice(this.snakes.indexOf(snake), 1);
 	}
   
@@ -72,7 +73,7 @@ export class Session {
 
 	public spawnApples(): void {
 		for (let i: number = this.calculateApples(); i >= 0; i--) {
-			this._apples.push(new Apple(this.getRandomPosition()));
+			this._apples.push(new Apple(this.getApplePosition()));
 		}
 	}
 
@@ -81,10 +82,6 @@ export class Session {
 			Math.random() *
 			Math.round(this.snakes.length * 0.75) - this._apples.length + 1
 		);
-	}
-
-	public removeApple(appleToRemove: Apple) {
-		this._apples.splice(this._apples.indexOf(appleToRemove), 1);
 	}
 
 	private runGameLoop(): void {
@@ -137,56 +134,55 @@ export class Session {
 		} as GameState;
 	}
 
-	public getRandomPosition(): [number, number] {
-		let x = Math.floor(Math.random() * 50);
-		let y = Math.floor(Math.random() * 50);
-		let pos:[number, number] = [x, y];
-		let posFree = false;
-		let finished = false;
+	public getApplePosition(): [number, number] {
+		let position: [number, number] = [-1, -1];
+		let occupied = false
 
-		while (!finished) {
+		do {
+			position = [Math.floor(Math.random() * this.FIELD_WIDTH), Math.floor(Math.random() * this.FIELD_HEIGHT)];
 
-			if (!posFree) {
-				for (let i: number = 0; i < this.snakes.length; i++) {
-					let snake = this.snakes[i];
-					let snakePos = snake.head;
-					let snakeTail = snake.tail;
-					if (snakePos == pos) {
-						x = Math.floor(Math.random() * 50);
-						y = Math.floor(Math.random() * 50);
-						i = 0;
-					} else {
-						posFree = true
-					}
-					if (snakeTail != null) {
-						for (let o: number = 0; i < snakeTail.length; i++) {
-							let snakeSeg = snakeTail[i];
-							if (snakeSeg == pos) {
-								x = Math.floor(Math.random() * 50);
-								y = Math.floor(Math.random() * 50);
-								o = 0;
-								posFree = false;
-							} else {
-								posFree = true
-							}
-						}
-					}
+			this.apples.forEach((apple: Apple) => {
+				if (apple.position == position) {
+					occupied = true;
+					return;
 				}
-			} else {
-				for (let i: number = 0; i < this.apples.length; i++) {
-					let apple = this.apples[i];
-					let applePos = apple.position;
-					if (applePos == pos) {
-						x = Math.floor(Math.random() * 50);
-						y = Math.floor(Math.random() * 50);
-						i = 0;
-						posFree = false;
-					} else {
-						finished = true;
+			});
+			this.snakes.forEach((snake: Snake) => {
+				snake.segments.forEach((segment: [number, number]) => {
+					if (segment == position) {
+						occupied = true;
+						return;
 					}
+				})
+			});
+		} while(occupied);
+
+		return position;
+	}
+
+	public getSnakePosition(): [number, number] {
+		let position: [number, number] = [-1, -1];
+		let occupied = false
+
+		do {
+			position = [Math.floor(Math.random() * this.FIELD_WIDTH), Math.floor(Math.random() * this.FIELD_HEIGHT)];
+
+			this.apples.forEach((apple: Apple) => {
+				if (apple.position == position) {
+					occupied = true;
+					return;
 				}
-			}
-		}
-		return pos;
+			});
+			this.snakes.forEach((snake: Snake) => {
+				snake.segments.forEach((segment: [number, number]) => {
+					if (segment == position) {
+						occupied = true;
+						return;
+					}
+				})
+			});
+		} while(occupied);
+
+		return position;
 	}
 }

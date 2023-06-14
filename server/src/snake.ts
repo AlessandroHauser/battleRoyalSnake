@@ -1,4 +1,3 @@
-import {Session} from "./session";
 import {Direction} from "./enums/direction.enum";
 import {WebSocket} from "ws";
 
@@ -9,7 +8,6 @@ export class Snake {
 	private _tail: [number, number][] | null;
 	private _direction: Direction | null;
 	private directionChanged: boolean | null;
-	private _session: Session | null;
 	private _alive: boolean | null;
 
 	constructor(id: string, socket: WebSocket) {
@@ -19,8 +17,7 @@ export class Snake {
 		this._tail = null;
 		this._direction = null;
 		this.directionChanged = null;
-		this._alive = null;
-		this._session = null;
+		this._alive = false;
 	}
 
 	public get id(): string {
@@ -29,17 +26,6 @@ export class Snake {
 
 	public get socket(): WebSocket {
 		return this._socket;
-	}
-
-	public get session(): Session | null {
-		return this._session;
-	}
-
-	public set session(value: Session | null) {
-		this._session = value;
-
-		this._alive = true;
-		this.findPosition();
 	}
 
 	public get head(): [number, number] | null {
@@ -76,13 +62,15 @@ export class Snake {
 		return this._alive;
 	}
 
-	private findPosition(): void {
-		if (this._session instanceof Session) {
-			this._head = this._session.getRandomPosition();
-			let x = this._head[0] + 1;
-			let y = this._head[1];
-			this._tail = [[x, y], [x + 1, y]]
-		}
+	public set alive(alive: boolean | null) {
+		this._alive = alive;
+	}
+
+	public setPosition(position: [number, number]): void {
+		this._head = position;
+		let x = this._head[0] + 1;
+		let y = this._head[1];
+		this._tail = [[x, y], [x + 1, y]]
 		this._direction = Direction.LEFT;
 	}
 

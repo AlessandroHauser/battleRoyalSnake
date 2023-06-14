@@ -22,10 +22,9 @@ export class Server {
 
 	public start(port: number): void {
 		this.serverSocket = new WebSocketServer({port: port});
-		this.serverSocket.on("listening", () => console.log("Listening"))
 		this.serverSocket.on("connection", (socket: WebSocket): void => {
 			socket.on("message", (data: RawData, isBinary: boolean): void => this.handleClientMessage(socket, data, isBinary));
-			socket.on("close", (data: RawData, isBinary: boolean): void => console.log("someone disconnected"));
+			// socket.on("close", (data: RawData, isBinary: boolean): void => console.log("someone disconnected"));
 		});
 
 		console.log(`Server listening on port: ${port}`);
@@ -56,6 +55,7 @@ export class Server {
 				break;
 			}
 		}
+
 
 		if (joinedSession == null) {
 			joinedSession = new Session();
