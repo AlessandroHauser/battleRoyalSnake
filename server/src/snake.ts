@@ -114,10 +114,7 @@ export class Snake {
     }
 
     public changeDirection(newDirection: Direction): void {
-        if (!(this._direction == Direction.UP && newDirection == Direction.DOWN) &&
-            !(this._direction == Direction.DOWN && newDirection == Direction.UP) &&
-            !(this._direction == Direction.LEFT && newDirection == Direction.RIGHT) &&
-            !(this._direction == Direction.RIGHT && newDirection == Direction.LEFT) && !this.directionChanged) {
+        if (!Direction.isOpposite(this._direction, newDirection) && !this.directionChanged) {
             this._direction = newDirection;
             this.directionChanged = true;
         }
