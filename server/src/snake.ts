@@ -147,17 +147,17 @@ export class Snake {
 
     public checkCollision(): void {
 		if(this._head && this.session) {
-			if (this._head[0] > this.session.FIELD_SIZE) {
+			if (this._head[0] >= this.session.FIELD_WIDTH) {
 				this._head[0] = 0;
 			}
-			if (this._head[1] > this.session.FIELD_SIZE) {
+			if (this._head[1] >= this.session.FIELD_HEIGHT) {
 				this._head[1] = 0;
 			}
 			if (this._head[0] < 0) {
-				this._head[0] = this.session.FIELD_SIZE;
+				this._head[0] = this.session.FIELD_WIDTH - 1;
 			}
 			if (this._head[1] < 0) {
-				this._head[1] = this.session.FIELD_SIZE;
+				this._head[1] = this.session.FIELD_HEIGHT - 1;
 			}
 
 			// check if snake should eat apple

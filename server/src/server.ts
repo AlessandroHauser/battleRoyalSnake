@@ -24,6 +24,7 @@ export class Server {
 		this.serverSocket = new WebSocketServer({port: port});
 		this.serverSocket.on("connection", (socket: WebSocket): void => {
 			socket.on("message", (data: RawData, isBinary: boolean): void => this.handleClientMessage(socket, data, isBinary));
+			socket.on("close", (data: RawData, isBinary: boolean): void => console.log("someone disconnected"));
 		});
 	}
 
@@ -77,27 +78,33 @@ export class Server {
 	}
 
 	private receiveInput(message: Message): void {
-		let direction: Direction | undefined = undefined;
+		if(message.data.type === "ChangeDirection") {
+			let direction: Direction | undefined = undefined;
 
-		switch (message.data.toString().toLowerCase()) {
-			case "w":
-				direction = Direction.UP;
-				break;
-			case "a":
-				direction = Direction.LEFT;
-				break;
-			case "s":
-				direction = Direction.DOWN;
-				break;
-			case "d":
-				direction = Direction.RIGHT;
-				break;
-			default:
-				break;
-		}
+			switch (message.data.key) {
+				case "w":
+				case "ArrowUp":
+					direction = Direction.UP;
+					break;
+				case "a":
+				case "ArrowLeft":
+					direction = Direction.LEFT;
+					break;
+				case "s":
+				case "ArrowDown":
+					direction = Direction.DOWN;
+					break;
+				case "d":
+				case "ArrowRight":
+					direction = Direction.RIGHT;
+					break;
+				default:
+					break;
+			}
 
-		if (direction && message.sessionName && message.clientId) {
-			this.getSessionWithName(message.sessionName)?.getPlayer(message.clientId)?.changeDirection(direction);
+			if (direction != undefined && message.sessionName && message.clientId) {
+				this.getSessionWithName(message.sessionName)?.getPlayer(message.clientId)?.changeDirection(direction);
+			}
 		}
 	}
 

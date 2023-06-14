@@ -6,10 +6,8 @@ import {SessionState} from "./enums/session-state.enum";
 import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 
 export class Session {
-	get apples(): Apple[] {
-		return this._apples;
-	}
-	public readonly FIELD_SIZE: number = 50;
+	public readonly FIELD_WIDTH: number = 100;
+	public readonly FIELD_HEIGHT: number = 70;
 	public readonly MAX_PLAYERS: number = 8;
 
 	private readonly _name: string;
@@ -66,6 +64,10 @@ export class Session {
 	public removePlayer(snake: Snake): void {
 		snake.session = null;
 		this.snakes.splice(this.snakes.indexOf(snake), 1);
+	}
+  
+  public get apples(): Apple[] {
+		return this._apples;
 	}
 
 	private runGameLoop(): void {
