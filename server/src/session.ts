@@ -125,7 +125,7 @@ export class Session {
 		if (snake.alive) {
 			snake.checkSelfCollision();
 			this.snakes.forEach((_snake: Snake) => {
-				if (snake != _snake && _snake.alive) {
+				if (snake != _snake) {
 					snake.checkSnakeCollision(_snake.segments)
 				}
 			});
