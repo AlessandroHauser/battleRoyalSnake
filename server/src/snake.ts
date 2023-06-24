@@ -37,13 +37,11 @@ export class Snake {
 	}
 
 	public get segments(): [number, number][] {
-		if (this._alive) {
-			if (this.head) {
-				if (this.tail) {
-					return [this.head, ...this.tail];
-				}
-				return [this.head];
+		if (this.head) {
+			if (this.tail) {
+				return [this.head, ...this.tail];
 			}
+			return [this.head];
 		}
 		return [];
 	}
@@ -66,53 +64,73 @@ export class Snake {
 		this._alive = alive;
 	}
 
+	/**
+	 * Set the position for the snake and create the tail.
+	 *
+	 * @param {[number, number]} position - Position for the snake to spawn.
+	 */
 	public setPosition(position: [number, number]): void {
 		this._head = position;
-		let x = this._head[0] + 1;
-		let y = this._head[1];
+		let x: number = this._head[0] + 1;
+		let y: number = this._head[1];
 		this._tail = [[x, y], [x + 1, y]]
 		this._direction = Direction.LEFT;
 	}
 
+	/**
+	 * Move the snake.
+	 *
+	 * @param {number} fieldWidth - Width of the field, needed for the board wrapping
+	 * @param {number} fieldHeight - Height of the field, needed for the board wrapping
+	 */
 	public move(fieldWidth: number, fieldHeight: number): void {
-		if(this._head && this._tail) {
-			for (let i = this._tail.length -1; i > 0; i--) {
-				this._tail[i] = this._tail[i-1].slice() as [number, number];
-			}
-			this._tail[0] = this._head.slice() as [number, number];
+		if (this.alive) {
+			if(this._head && this._tail) {
+				for (let i = this._tail.length -1; i > 0; i--) {
+					this._tail[i] = this._tail[i-1].slice() as [number, number];
+				}
+				this._tail[0] = this._head.slice() as [number, number];
 
-			switch(this._direction) {
-				case Direction.UP:
-					this._head[1] -= 1;
-					if (this._head[0] < 0) {
-						this._head[0] = fieldWidth - 1;
-					}
-					break;
-				case Direction.LEFT:
-					this._head[0] -= 1;
-					if (this._head[1] < 0) {
-						this._head[1] = fieldHeight - 1;
-					}
-					break;
-				case Direction.DOWN:
-					this._head[1] += 1;
-					if (this._head[1] >= fieldHeight) {
-						this._head[1] = 0;
-					}
-					break;
-				case Direction.RIGHT:
-					this._head[0] += 1;
-					if (this._head[0] >= fieldWidth) {
-						this._head[0] = 0;
-					}
-					break;
-				default:
-					break;
+				switch(this._direction) {
+					case Direction.UP:
+						this._head[1] -= 1;
+						break;
+					case Direction.LEFT:
+						this._head[0] -= 1;
+						break;
+					case Direction.DOWN:
+						this._head[1] += 1;
+						break;
+					case Direction.RIGHT:
+						this._head[0] += 1;
+						break;
+					default:
+						break;
+				}
+
+
+				if (this._head[0] < 0) {
+					this._head[0] = fieldWidth - 1;
+				} else if (this._head[1] < 0) {
+					this._head[1] = fieldHeight - 1;
+				} else if (this._head[1] >= fieldHeight) {
+					this._head[1] = 0;
+				} else if (this._head[0] >= fieldWidth) {
+					this._head[0] = 0;
+				}
+				this.directionChanged = false;
 			}
-			this.directionChanged = false;
+		} else {
+			this._head = null;
+			this._tail = null;
 		}
     }
 
+	/**
+	 * Change direction of the snake.
+	 *
+	 * @param {Direction} newDirection - New direction to move to.
+	 */
     public changeDirection(newDirection: Direction): void {
         if (!Direction.isOpposite(this._direction, newDirection) && !this.directionChanged) {
             this._direction = newDirection;
@@ -121,36 +139,55 @@ export class Snake {
 
     }
 
+	/**
+	 * Check collision with own tail by its position.
+	 */
 	public checkSelfCollision(): boolean {
-		if (this.head && this.tail) {
-			for (let segment of this.tail) {
-				if (segment == this.head) {
-					this._alive = false;
-					return true;
+		if (this.alive) {
+			if (this.head && this.tail) {
+				for (let segment of this.tail) {
+					if (JSON.stringify(segment) == JSON.stringify(this.head)) {
+						this.alive = false;
+						return true;
+					}
 				}
 			}
 		}
 		return false;
 	}
 
+	/**
+	 * Check collision with snakes by their positions.
+	 *
+	 * @param {[number, number][]} snake - Array of Arrays of x, y positions of the other snakes segments.
+	 */
 	public checkSnakeCollision(snake: [number, number][]): boolean {
-		if (this.head) {
-			for (let segment of snake) {
-				if (segment == this.head) {
-					this._alive = false;
-					return true;
+		if (this.alive) {
+			if (this.head) {
+				for (let segment of snake) {
+					if (JSON.stringify(segment) == JSON.stringify(this.head)) {
+						this.alive = false;
+						return true;
+					}
 				}
 			}
 		}
 		return false;
 	}
 
+	/**
+	 * Check collision with apples by their position.
+	 *
+	 * @param {[number, number]} apples - Array of x, y positions of the apples.
+	 */
 	public checkAppleCollision(apples: [number, number][]): number {
-		if (this.head) {
-			for (let i: number = apples.length; i >= 0; i--) {
-				if (apples[i] == this.head) {
-					this.addTailSegment();
-					return i;
+		if (this.alive) {
+			if (this.head) {
+				for (let i: number = apples.length - 1; i >= 0; i--) {
+					if (JSON.stringify(apples[i]) === JSON.stringify(this.head)) {
+						this.addTailSegment();
+						return i;
+					}
 				}
 			}
 		}
