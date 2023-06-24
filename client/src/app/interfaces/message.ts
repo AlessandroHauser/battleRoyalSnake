@@ -1,5 +1,7 @@
+import {MessageNames} from "../enums/message-names";
+
 export interface Message {
-  name: string;
+  name: MessageNames;
   clientId?: string;
   sessionName?: string;
   status?: number;

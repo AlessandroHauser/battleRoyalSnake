@@ -17,22 +17,8 @@ export class StartComponent {
   }
 
   public start(): void {
-    let i = 20;
-    let min = 0;
-    let second: number;
-    const self = this;
-    (function repeat(){
-      if (--i < min) {
-        self.data.comp.startDialog.closeAll()
-        self.data.clientService.sendJoinSession();
-        return;
-      }
-      setTimeout(() => {
-        second = i;
-        self.showCountdown = second
-
-        repeat();
-      }, 1000);
-    })();
+    this.data.clientService.sendJoinSession();
+    this.data.comp.startDialog.closeAll()
+    this.started = true;
   }
 }

@@ -1,7 +1,4 @@
 <h1 mat-dialog-title>Willkommen zu unserem Snake Battle Royale!</h1>
 <div mat-dialog-content class="container">
-  <button *ngIf="!started" mat-button color="primary" (click)="started = true;start()">Start</button>
-  <h2 *ngIf="started">Warten auf Lobby</h2>
-  <h2 *ngIf="started">{{showCountdown}}</h2>
-  <mat-progress-bar *ngIf="started" mode="indeterminate"></mat-progress-bar>
+  <button *ngIf="!started" mat-button color="primary" (click)="start()">Play</button>
 </div>
