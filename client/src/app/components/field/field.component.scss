@@ -1,3 +1,30 @@
-#myCanvas{
-  margin: 50px;
+.field {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  .header {
+    min-height: 120px;
+
+    #myCanvas {
+      margin: 50px;
+    }
+    h1, h2, mat-progress-bar {
+      text-align: center;
+    }
+
+    mat-progress-bar {
+      margin-bottom: 50px;
+    }
+  }
+
+  #field {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    padding: 32px;
+  }
 }

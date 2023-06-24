@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {AppComponent} from "../../app.component";
+import {ClientService} from "../../services/client.service";
 
 @Component({
   selector: 'app-death-screen',
@@ -7,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DeathScreenComponent implements OnInit {
 
-  constructor() { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { comp: AppComponent, clientService: ClientService }) {}
 
-  ngOnInit(): void {
+  backClick() {
+    this.data.clientService.sendJoinSession();
+    let comp = this.data.comp;
+    comp.deathDialog.closeAll()
+    comp.resetGame();
   }
 
+  ngOnInit(): void {
+    this.data.clientService.connect("ws://localhost:42069")
+  }
 }

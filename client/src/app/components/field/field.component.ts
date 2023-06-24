@@ -1,15 +1,20 @@
 import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import {GameState} from "../../interfaces/game-state";
+import {SessionState} from "../../enums/session-state";
+import {round} from "@popperjs/core/lib/utils/math";
 
 @Component({
   selector: 'app-field',
   templateUrl: './field.component.html',
   styleUrls: ['./field.component.scss']
 })
-export class FieldComponent implements OnInit {
-  public readonly FIELD_WIDTH = 100;
-  public readonly FIELD_HEIGHT = 70;
-  public readonly SQUARE_SIZE = 10;
+export class FieldComponent implements OnInit, OnChanges {
+  public fieldWidth = 100;
+  public fieldHeight = 70;
+  public squareSize = 10;
+  public sessionState!: SessionState;
+  public showCountdown: number = 20;
+  public lobbyName: string = '';
 
   private canvas: HTMLCanvasElement | undefined;
   private context: CanvasRenderingContext2D | null | undefined;
@@ -31,7 +36,27 @@ export class FieldComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.canvas && this.context) {
-      this.draw(changes["gameState"].currentValue)
+      let gameState: GameState = changes["gameState"].currentValue
+      if (gameState)
+      {
+        this.lobbyName = gameState.session.name
+        this.sessionState = gameState.session.state;
+        this.draw(gameState)
+        if (gameState.session.countDown) {
+          this.showCountdown = round(gameState.session.countDown / 1000);
+        }
+
+        if (gameState.session) {
+          this.fieldWidth = gameState.session.fieldWidth;
+          this.fieldHeight = gameState.session.fieldHeight;
+
+          if (this.canvas.width / this.fieldWidth < this.canvas.height / this.fieldHeight) {
+            this.squareSize = this.canvas.width / this.fieldWidth;
+          } else {
+            this.squareSize = this.canvas.height / this.fieldHeight;
+          }
+        }
+      }
     }
   }
 
@@ -39,7 +64,7 @@ export class FieldComponent implements OnInit {
     this.drawField();
     if (gameState) {
       gameState.snakes.forEach((snake: [number, number][]): void => {
-        this.drawSnake(snake);
+        this.drawSnake(snake, gameState.player.position);
       });
       this.drawApples(gameState.apples);
     }
@@ -61,10 +86,20 @@ export class FieldComponent implements OnInit {
     });
   }
 
-  private drawSnake(snake: [number, number][]): void {
+  private drawSnake(snake: [number, number][], playerHeadPos: [number, number]): void {
     snake.forEach((segment: [number, number]): void => {
       this.context!.fillStyle = "darkgreen";
+
+      if (snake.indexOf(segment) === 0) {
+        this.context!.fillStyle = "lightgreen";
+        if (playerHeadPos && segment[0] === playerHeadPos[0] && segment[1] === playerHeadPos[1]) {
+          this.context!.fillStyle = "yellow";
+        }
+      }
+
       this.context!.fillRect(segment[0] * this.SQUARE_SIZE, segment[1] * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
     });
   }
+
+  protected readonly SessionState = SessionState;
 }

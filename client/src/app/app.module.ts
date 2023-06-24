@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FieldComponent } from './components/field/field.component';
 import { StartComponent } from './components/start/start.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { DeathScreenComponent } from './components/death-screen/death-screen.component';
 import {FormsModule} from "@angular/forms";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -26,7 +27,8 @@ import {MatDialogModule} from '@angular/material/dialog';
     FormsModule,
     BrowserAnimationsModule,
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+    MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

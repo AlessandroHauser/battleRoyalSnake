@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Message} from "../interfaces/message";
 import {Subject} from "rxjs";
+import {Direction} from "../enums/direction";
+import {MessageNames} from "../enums/message-names";
 
 @Injectable({
   providedIn: 'root'
@@ -26,22 +28,23 @@ export class ClientService {
   public sendJoinSession(): void {
     if (this.socket) {
       const message: Message = {
-        name: "JoinSession"
+        name: MessageNames.JOIN_SESSION
       };
       this.socket.send(JSON.stringify(message));
     }
   }
 
-  public sendUserInput(input: string, id: string, session: string): void {
+  public sendUserInput(direction: Direction, keyInput:string, id: string, session: string): void {
     if (this.socket) {
       const message: Message = {
-        name: "UserInput",
+        name: MessageNames.USER_INPUT,
         clientId: id,
         sessionName: session,
         status: 200,
         data: {
           type: "ChangeDirection",
-          key: input
+          direction: direction,
+          key: keyInput
         }
       }
       this.socket.send(JSON.stringify(message))
