@@ -254,28 +254,32 @@ export class Session {
 	 */
 	private handleSessionState(): void {
 		// Check for the start of the game
-		if (this.snakes.length >= 4) {
-			if (this.sessionCountdownStart == undefined) {
-				this.state = SessionState.STARTING;
-				this.sessionCountdownStart = (new Date()).getTime();
-			} else {
-				if((new Date).getTime() >= this.sessionCountdownStart + this.COUNTDOWN_TIME) {
-					clearInterval(this.sessionInterval);
+		if (this.state == SessionState.WAITING) {
+			if (this.snakes.length >= 4) {
+				if (this.sessionCountdownStart == undefined) {
+					this.state = SessionState.STARTING;
+					this.sessionCountdownStart = (new Date()).getTime();
+				} else {
+					if((new Date).getTime() >= this.sessionCountdownStart + this.COUNTDOWN_TIME) {
+						clearInterval(this.sessionInterval);
 
-					this.spawnApples()
-					for (let snake of this.snakes) {
-						snake.setPosition(this.getSnakePosition());
-						snake.alive = true;
+						this.spawnApples()
+						for (let snake of this.snakes) {
+							snake.setPosition(this.getSnakePosition());
+							snake.alive = true;
+						}
+						this.broadcastGameState();
+
+
+						this.sessionCountdownStart = undefined;
+						this.state = SessionState.RUNNING;
+						setTimeout(() => this.sessionInterval = setInterval(() => this.runGameLoop(), 200), 2000);
 					}
-					this.broadcastGameState();
-
-					this.state = SessionState.RUNNING;
-					setTimeout(() => this.sessionInterval = setInterval(() => this.runGameLoop(), 200), 2000);
 				}
+			} else {
+				this.state = SessionState.WAITING;
+				this.sessionCountdownStart = undefined;
 			}
-		} else {
-			this.state = SessionState.WAITING;
-			this.sessionCountdownStart = undefined;
-		}
+		} 
 	}
 }
