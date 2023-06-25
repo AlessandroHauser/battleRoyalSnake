@@ -4,12 +4,11 @@ import {AppComponent} from "../../app.component";
 import {ClientService} from "../../services/client.service";
 
 @Component({
-	selector: 'app-death-screen',
-	templateUrl: './death-screen.component.html',
-	styleUrls: ['./death-screen.component.scss']
+	selector: 'app-win-screen',
+	templateUrl: './win-screen.component.html',
+	styleUrls: ['./win-screen.component.scss']
 })
-export class DeathScreenComponent {
-
+export class WinScreenComponent implements OnInit {
 	constructor(@Inject(MAT_DIALOG_DATA) public data: { comp: AppComponent, clientService: ClientService }) {
 	}
 
@@ -19,4 +18,9 @@ export class DeathScreenComponent {
 		comp.deathDialog.closeAll()
 		comp.resetGame();
 	}
+
+	ngOnInit(): void {
+		this.data.clientService.connect("ws://localhost:42069")
+	}
+
 }

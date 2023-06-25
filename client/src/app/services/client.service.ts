@@ -38,7 +38,7 @@ export class ClientService {
 		}
 	}
 
-	public sendUserInput(direction: Direction, keyInput: string, id: string, session: string): void {
+	public sendUserInput(keyInput: string, id: string, session: string, inputType: "direction" | "action", action: Direction | string | undefined): void {
 		if (this.socket) {
 			const message: Message = {
 				name: "UserInput",
@@ -47,7 +47,8 @@ export class ClientService {
 				status: 200,
 				data: {
 					type: "ChangeDirection",
-					direction: direction,
+					direction: inputType === "direction" ? action : undefined,
+					action: inputType === "action" ? action : undefined,
 					key: keyInput
 				}
 			}

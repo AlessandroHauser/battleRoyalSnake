@@ -12,6 +12,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
+import {WinScreenComponent} from './components/win-screen/win-screen.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 		AppComponent,
 		FieldComponent,
 		StartComponent,
-		DeathScreenComponent
+		DeathScreenComponent,
+		WinScreenComponent
 	],
 	imports: [
 		BrowserModule,

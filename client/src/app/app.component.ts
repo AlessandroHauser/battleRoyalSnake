@@ -4,9 +4,10 @@ import {Message} from "./interfaces/message";
 import {GameState} from "./interfaces/game-state";
 import {MatDialog} from "@angular/material/dialog";
 import {StartComponent} from "./components/start/start.component";
-import {DeathScreenComponent} from "./components/death-screen/death-screen.component";
 import {Direction} from "./enums/direction";
 import {SessionState} from "./enums/session-state";
+import {DeathScreenComponent} from "./components/death-screen/death-screen.component";
+import {WinScreenComponent} from "./components/win-screen/win-screen.component";
 
 @Component({
 	selector: 'app-root',
@@ -18,18 +19,23 @@ export class AppComponent implements OnInit {
 	public id: string | null;
 	public session: string | null;
 	public gameState: GameState | null;
-	private direction: Direction | undefined;
 	private deathDialogOpen = false;
+	private winDialogOpen = false;
 
-	constructor(public clientService: ClientService, public startDialog: MatDialog, public deathDialog: MatDialog) {
+	constructor(
+		public clientService: ClientService,
+		public startDialog: MatDialog,
+		public winDialog: MatDialog,
+		public deathDialog: MatDialog
+	) {
 		this.title = "Snake Battleroyale!";
 		this.id = null;
 		this.session = null;
 		this.gameState = null;
 	}
 
-	openStartDialog() {
-		this.startDialog.open(StartComponent, {
+	private openDialog(clazz: any) {
+		this.startDialog.open(clazz, {
 			disableClose: true,
 			data: {
 				comp: this,
@@ -38,14 +44,16 @@ export class AppComponent implements OnInit {
 		});
 	}
 
+	openStartDialog() {
+		this.openDialog(StartComponent)
+	}
+
 	openDeathDialog(): void {
-		this.deathDialog.open(DeathScreenComponent, {
-			disableClose: true,
-			data: {
-				comp: this,
-				clientService: this.clientService,
-			}
-		});
+		this.openDialog(DeathScreenComponent)
+	}
+
+	openWinDialog(): void {
+		this.openDialog(WinScreenComponent)
 	}
 
 	ngOnInit() {
@@ -77,44 +85,57 @@ export class AppComponent implements OnInit {
 			this.deathDialogOpen = true;
 			this.openDeathDialog();
 		}
-		// if (gameState.snakes.length == 1 && gameState.session.state == SessionState.ENDING)
+		if (gameState.session.state == SessionState.ENDING && gameState.player.alive && !this.winDialogOpen) {
+			this.winDialogOpen = true;
+			this.openWinDialog()
+		}
 	}
 
 	@HostListener('document:keydown', ['$event'])
 	public sendInput(event: KeyboardEvent): void {
 		if (this.id && this.session) {
+			let direction: Direction | undefined;
+			let action: string | undefined;
+
 			switch (event.key) {
 				case "w":
 				case "ArrowUp":
-					this.direction = Direction.UP;
+					direction = Direction.UP;
 					break;
 				case "a":
 				case "ArrowLeft":
-					this.direction = Direction.LEFT;
+					direction = Direction.LEFT;
 					break;
 				case "s":
 				case "ArrowDown":
-					this.direction = Direction.DOWN;
+					direction = Direction.DOWN;
 					break;
 				case "d":
 				case "ArrowRight":
-					this.direction = Direction.RIGHT;
+					direction = Direction.RIGHT;
+					break;
+				case "r":
+				case " ":
+					action = "respawn";
 					break;
 				default:
 					break;
 			}
 
-			this.clientService.sendUserInput(this.direction!, event.key, this.id, this.session);
+			if (direction) {
+				event.preventDefault();
+				this.clientService.sendUserInput(event.key, this.id, this.session, "direction", direction);
+			} else {
+				this.clientService.sendUserInput(event.key, this.id, this.session, "action", action);
+			}
 		}
 	}
 
 	resetGame() {
 		this.gameState = null;
-		this.direction = undefined;
 		this.deathDialogOpen = false;
 		this.id = null;
 		this.session = null;
 		this.title = '';
-
 	}
 }

@@ -292,11 +292,12 @@ export class Session {
 			if (this.snakes.filter((snake: Snake) => snake.alive).length == 1) {
 				clearInterval(this.sessionInterval);
 				this.state = SessionState.ENDING;
+				this.broadcastGameState();
 			}
 		}
 
 		// Handle the ending state of the session
-		if (this.state == SessionState.ENDING) {
+		/*if (this.state == SessionState.ENDING) {
 			setTimeout((): void => {
 				this.spawnApples()
 				for (let snake of this.snakes) {
@@ -308,6 +309,6 @@ export class Session {
 				this.sessionInterval = setInterval(() => this.runGameLoop(), 200);
 				this.state = SessionState.WAITING;
 			}, 5000);
-		}
+		}*/
 	}
 }
