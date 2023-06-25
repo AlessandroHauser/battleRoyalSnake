@@ -190,29 +190,29 @@ export class Session {
 	 * @return {[number, number]} Starting position for the apple.
 	 */
 	public getApplePosition(): [number, number] {
-		let cells: number = this.FIELD_WIDTH * this.FIELD_HEIGHT;
-		// Cells occupied by apples
-		cells -= this.apples.length;
-		// Cells occupied by snakes
-		for (let snake of this.snakes) {
-			cells -= snake.segments.length;
-		}
+		let position: [number, number] = [-1, -1];
+		let occupied: boolean = false;
 
-		if (cells > 0) {
-			let cell: number = Math.floor(Math.random() * cells);
+		do {
+			position = [Math.floor(Math.random() * this.FIELD_WIDTH), Math.floor(Math.random() * this.FIELD_HEIGHT)];
 
-			cell += this.snakes
-				.map((snake: Snake) => snake.segments)
-				.flatMap((segments: [number, number][]) => segments)
-				.concat(...this.apples.map((apple: Apple) => apple.position))
-				.map((cell: [number, number]): number => cell[1] * this.FIELD_WIDTH + cell[0])
-				.sort()
-				.findIndex((_cell: number) => _cell >= cell);
+			this.apples.forEach((apple: Apple) => {
+				if (apple.position == position) {
+					occupied = true;
+					return;
+				}
+			});
+			this._snakes.forEach((snake: Snake) => {
+				snake.segments.forEach((segment: [number, number]) => {
+					if (segment == position) {
+						occupied = true;
+						return;
+					}
+				})
+			});
+		} while(occupied);
 
-			return [Math.floor(cell % this.FIELD_WIDTH), Math.floor(cell / this.FIELD_WIDTH)];
-		} else {
-			return [-1, -1];
-		}
+		return position;
 	}
 
 	/**
@@ -222,7 +222,7 @@ export class Session {
 	 */
 	public getSnakePosition(): [number, number] {
 		let position: [number, number] = [-1, -1];
-		let occupied = false
+		let occupied: boolean = false;
 
 		do {
 			position = [Math.floor(Math.random() * this.FIELD_WIDTH), Math.floor(Math.random() * this.FIELD_HEIGHT)];
