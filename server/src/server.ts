@@ -34,6 +34,8 @@ export class Server {
 			socket.on("close", (): void => this.handleClientDisconnect(socket));
 		});
 
+		setInterval(() => this.handleSessions(), 10000);
+
 		console.log(`Server listening on port: ${port}`);
 	}
 
@@ -188,6 +190,14 @@ export class Server {
 		}
 
 		return null;
+	}
+
+	private handleSessions(): void {
+		for (let i: number = this.sessions.length - 1; i >= 0; i--) {
+			if (this.sessions.at(i)?.snakes.length == 0) {
+				this.sessions.splice(i, 1);
+			}
+		}
 	}
 
 	/**
