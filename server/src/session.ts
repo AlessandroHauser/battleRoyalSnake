@@ -7,8 +7,8 @@ import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {clearInterval} from "timers";
 
 export class Session {
-	public readonly FIELD_WIDTH: number = 100;
-	public readonly FIELD_HEIGHT: number = 70;
+	public readonly FIELD_WIDTH: number = 76;
+	public readonly FIELD_HEIGHT: number = 56;
 	public readonly MAX_PLAYERS: number = 8;
 
 	public readonly COUNTDOWN_TIME: number = 20000;
@@ -253,13 +253,18 @@ export class Session {
 	 * @private
 	 */
 	private handleSessionState(): void {
-		// Check for the start of the game
+		// Handle waiting phase of the game
 		if (this.state == SessionState.WAITING) {
+			if (this.snakes.length >= 4 && this.sessionCountdownStart == undefined) {
+				this.state = SessionState.STARTING;
+				this.sessionCountdownStart = (new Date()).getTime();
+			}
+		}
+
+		// Handle starting phase of the game
+		if (this.state == SessionState.STARTING) {
 			if (this.snakes.length >= 4) {
-				if (this.sessionCountdownStart == undefined) {
-					this.state = SessionState.STARTING;
-					this.sessionCountdownStart = (new Date()).getTime();
-				} else {
+				if (this.sessionCountdownStart) {
 					if((new Date).getTime() >= this.sessionCountdownStart + this.COUNTDOWN_TIME) {
 						clearInterval(this.sessionInterval);
 
@@ -280,6 +285,10 @@ export class Session {
 				this.state = SessionState.WAITING;
 				this.sessionCountdownStart = undefined;
 			}
-		} 
+		}
+
+		// Handle running phase of the game
+
+		// Handle ending phase of the game
 	}
 }

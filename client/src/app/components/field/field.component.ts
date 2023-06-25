@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit, OnChanges, SimpleChanges} from '@angular/core';
 import {GameState} from "../../interfaces/game-state";
 import {SessionState} from "../../enums/session-state";
 import {round} from "@popperjs/core/lib/utils/math";
@@ -27,11 +27,11 @@ export class FieldComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.canvas = <HTMLCanvasElement>document.getElementById("field");
-    this.canvas.width = this.FIELD_WIDTH * this.SQUARE_SIZE;
-    this.canvas.height = this.FIELD_HEIGHT * this.SQUARE_SIZE;
+    this.canvas.width = document.getElementById("field")!.clientWidth;
+    this.canvas.height = document.getElementById("field")!.clientHeight;
     this.context = this.canvas.getContext("2d");
 
-    this.drawField();
+    this.drawField(0, 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -61,32 +61,42 @@ export class FieldComponent implements OnInit, OnChanges {
   }
 
   public draw(gameState: GameState): void {
-    this.drawField();
-    if (gameState) {
-      gameState.snakes.forEach((snake: [number, number][]): void => {
-        this.drawSnake(snake, gameState.player.position);
-      });
-      this.drawApples(gameState.apples);
-    }
-  }
+    if (this.canvas && this.context) {
+      let xOffset: number = (this.canvas?.width - (this.squareSize * this.fieldWidth)) / 2;
+      let yOffset: number = (this.canvas?.height - (this.squareSize * this.fieldHeight)) / 2;
 
-  private drawField(): void {
-    for (let x = 0; x < this.FIELD_WIDTH; x++) {
-      for (let y = 0; y < this.FIELD_HEIGHT; y++) {
-        this.context!.fillStyle = (x + y) % 2 == 0 ? "#A2D149" : "#AAD751";
-        this.context!.fillRect(x * this.SQUARE_SIZE, y * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
+      this.drawField(xOffset, yOffset);
+      if (gameState) {
+        this.drawApples(gameState.apples, xOffset, yOffset);
+        gameState.snakes.forEach((snake: [number, number][]): void => {
+          this.drawSnake(snake, gameState.player.position, xOffset, yOffset);
+        });
       }
     }
   }
 
-  private drawApples(apples: [number, number][]): void {
+  private drawField(xOffset: number, yOffset: number): void {
+    if (this.canvas && this.context) {
+      this.context.fillStyle = "#FFFFFF";
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      for (let x = 0; x < this.fieldWidth; x++) {
+        for (let y = 0; y < this.fieldHeight; y++) {
+          this.context.fillStyle = (x + y) % 2 == 0 ? "#A2D149" : "#AAD751";
+          this.context.fillRect(x * this.squareSize + xOffset, y * this.squareSize + yOffset, this.squareSize, this.squareSize);
+        }
+      }
+    }
+  }
+
+  private drawApples(apples: [number, number][], xOffset: number, yOffset: number): void {
     apples.forEach((apple: [number, number]): void => {
       this.context!.fillStyle = "red";
-      this.context!.fillRect(apple[0] * this.SQUARE_SIZE, apple[1] * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
+      this.context!.fillRect(apple[0] * this.squareSize + xOffset, apple[1] * this.squareSize + yOffset, this.squareSize, this.squareSize);
     });
   }
 
-  private drawSnake(snake: [number, number][], playerHeadPos: [number, number]): void {
+  private drawSnake(snake: [number, number][], playerHeadPos: [number, number], xOffset: number, yOffset: number): void {
     snake.forEach((segment: [number, number]): void => {
       this.context!.fillStyle = "darkgreen";
 
@@ -97,7 +107,7 @@ export class FieldComponent implements OnInit, OnChanges {
         }
       }
 
-      this.context!.fillRect(segment[0] * this.SQUARE_SIZE, segment[1] * this.SQUARE_SIZE, this.SQUARE_SIZE, this.SQUARE_SIZE);
+      this.context!.fillRect(segment[0] * this.squareSize + xOffset, segment[1] * this.squareSize + yOffset, this.squareSize, this.squareSize);
     });
   }
 
