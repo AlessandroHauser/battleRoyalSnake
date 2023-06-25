@@ -86,6 +86,12 @@ export class Server {
 	 * @param {WebSocket} socket - Socket connected to the player.
 	 */
 	private joinSession(socket: WebSocket): void {
+		// Check if player is already in a session
+		const playerId: string | undefined = this.connections.get(socket);
+		if (playerId) {
+			this.getPlayerSession(playerId)?.removeSnakeById(playerId);
+		}
+
 		let joinedSession: Session | null = null;
 		for (let session of this.sessions) {
 			if (session.isJoinable()) {
@@ -192,6 +198,11 @@ export class Server {
 		return null;
 	}
 
+	/**
+	 * Manage the sessions of the server.
+	 *
+	 * @private
+	 */
 	private handleSessions(): void {
 		for (let i: number = this.sessions.length - 1; i >= 0; i--) {
 			if (this.sessions.at(i)?.snakes.length == 0) {

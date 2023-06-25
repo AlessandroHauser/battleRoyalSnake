@@ -97,7 +97,7 @@ export class Session {
 	}
 
 	public isJoinable(): boolean {
-		return this._snakes.length < this.MAX_PLAYERS && this._state == SessionState.WAITING;
+		return this._snakes.length < this.MAX_PLAYERS && (this._state == SessionState.WAITING || this.state == SessionState.STARTING);
 	}
 
 	/**
