@@ -8,6 +8,7 @@ import {Direction} from "./enums/direction";
 import {SessionState} from "./enums/session-state";
 import {DeathScreenComponent} from "./components/death-screen/death-screen.component";
 import {WinScreenComponent} from "./components/win-screen/win-screen.component";
+import {MessageNames} from "./enums/message-names";
 
 @Component({
 	selector: 'app-root',
@@ -64,11 +65,11 @@ export class AppComponent implements OnInit {
 
 	private handleMessage(message: Message): void {
 		switch (message.name) {
-			case "JoinedSession":
+			case MessageNames.JOINED_SESSION:
 				this.id = message.clientId!;
 				this.session = message.sessionName!;
 				break;
-			case "GameState":
+			case MessageNames.GAME_STATE:
 				let gameState: GameState = message.data!;
 				if (gameState) {
 					this.gameStateHandler(gameState)
