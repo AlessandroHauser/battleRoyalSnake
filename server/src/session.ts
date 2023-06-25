@@ -7,8 +7,8 @@ import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {clearInterval} from "timers";
 
 export class Session {
-	public readonly FIELD_WIDTH: number = 100;
-	public readonly FIELD_HEIGHT: number = 70;
+	public readonly FIELD_WIDTH: number = 10;
+	public readonly FIELD_HEIGHT: number = 10;
 	public readonly MAX_PLAYERS: number = 8;
 
 	public readonly COUNTDOWN_TIME: number = 20000;
@@ -280,6 +280,6 @@ export class Session {
 				this.state = SessionState.WAITING;
 				this.sessionCountdownStart = undefined;
 			}
-		} 
+		}
 	}
 }

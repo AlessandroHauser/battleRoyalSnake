@@ -1,12 +1,10 @@
 .container {
-  position: relative;
-  display: block;
-  text-align: center;
+	position: relative;
+	display: block;
+	text-align: center;
+
+	button {
+		background-color: white;
+	}
 }
 
-.content {
-  margin-top: 50px;
-}
-button {
-  background-color: white;
-}
