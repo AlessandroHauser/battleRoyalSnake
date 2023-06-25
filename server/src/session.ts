@@ -253,13 +253,18 @@ export class Session {
 	 * @private
 	 */
 	private handleSessionState(): void {
-		// Check for the start of the game
+		// Handle the waiting state of the session
 		if (this.state == SessionState.WAITING) {
+			if (this.snakes.length >= 4 && this.sessionCountdownStart == undefined) {
+				this.state = SessionState.STARTING;
+				this.sessionCountdownStart = (new Date()).getTime();
+			}
+		}
+
+		// Handle the starting state of the session
+		if (this.state == SessionState.STARTING) {
 			if (this.snakes.length >= 4) {
-				if (this.sessionCountdownStart == undefined) {
-					this.state = SessionState.STARTING;
-					this.sessionCountdownStart = (new Date()).getTime();
-				} else {
+				if (this.sessionCountdownStart) {
 					if((new Date).getTime() >= this.sessionCountdownStart + this.COUNTDOWN_TIME) {
 						clearInterval(this.sessionInterval);
 
@@ -281,5 +286,9 @@ export class Session {
 				this.sessionCountdownStart = undefined;
 			}
 		}
+
+		// Handle the running state of the session
+
+		// Handle the ending state of the session
 	}
 }
