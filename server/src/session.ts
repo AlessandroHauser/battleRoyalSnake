@@ -288,7 +288,26 @@ export class Session {
 		}
 
 		// Handle the running state of the session
+		if (this.state == SessionState.RUNNING) {
+			if (this.snakes.filter((snake: Snake) => snake.alive).length == 1) {
+				clearInterval(this.sessionInterval);
+				this.state = SessionState.ENDING;
+			}
+		}
 
 		// Handle the ending state of the session
+		if (this.state == SessionState.ENDING) {
+			setTimeout((): void => {
+				this.spawnApples()
+				for (let snake of this.snakes) {
+					snake.setPosition(this.getSnakePosition());
+					snake.alive = true;
+				}
+				this.broadcastGameState();
+
+				this.sessionInterval = setInterval(() => this.runGameLoop(), 200);
+				this.state = SessionState.WAITING;
+			}, 5000);
+		}
 	}
 }
