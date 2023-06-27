@@ -46,7 +46,7 @@ export class Snake {
 		return [];
 	}
 
-	public addTailSegment() {
+	public addTailSegment(): void {
 		if(this._tail) {
 			this._tail.push([-1, -1]);
 		}
@@ -71,10 +71,19 @@ export class Snake {
 	 */
 	public setPosition(position: [number, number]): void {
 		this._head = position;
-		let x: number = this._head[0] + 1;
-		let y: number = this._head[1];
-		this._tail = [[x, y], [x + 1, y]]
-		this._direction = Direction.LEFT;
+		this._direction = Math.floor(Math.random() * 4);
+
+		if (this.head) {
+			if (this.direction == Direction.UP) {
+				this._tail = [[this.head[0], this.head[1] + 1], [this.head[0], this.head[1] + 2]];
+			} else if (this.direction == Direction.DOWN) {
+				this._tail = [[this.head[0], this.head[1] - 1], [this.head[0], this.head[1] - 2]];
+			} else if (this.direction == Direction.LEFT) {
+				this._tail = [[this.head[0] + 1, this.head[1]], [this.head[0] + 2, this.head[1]]];
+			} else if (this.direction == Direction.RIGHT) {
+				this._tail = [[this.head[0] - 1, this.head[1]], [this.head[0] - 2, this.head[1]]];
+			}
+		}
 	}
 
 	/**

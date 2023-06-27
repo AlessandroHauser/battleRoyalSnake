@@ -47,7 +47,7 @@ export class ClientService {
 				sessionName: session,
 				status: 200,
 				data: {
-					type: "ChangeDirection",
+					type: inputType === "action" ? "PerformAction" : "ChangeDirection",
 					direction: inputType === "direction" ? action : undefined,
 					action: inputType === "action" ? action : undefined,
 					key: keyInput

@@ -9,8 +9,9 @@ export class Server {
 	private static instance: Server;
 
 	private serverSocket: WebSocketServer | null;
-	private readonly sessions: Session[];
 	private connections: Map<WebSocket, string>;
+
+	private readonly sessions: Session[];
 
 	constructor() {
 		this.serverSocket = null;
@@ -134,29 +135,18 @@ export class Server {
 	 * @param {Message} message - Message containing the input of the player.
 	 */
 	private receiveInput(message: Message): void {
-		if(message.data.type === "ChangeDirection") {
-			let direction: Direction | undefined = undefined;
+		if (message.data.type === "PerformAction") {
+			let action: string = message.data.action;
 
-			switch (message.data.key) {
-				case "w":
-				case "ArrowUp":
-					direction = Direction.UP;
-					break;
-				case "a":
-				case "ArrowLeft":
-					direction = Direction.LEFT;
-					break;
-				case "s":
-				case "ArrowDown":
-					direction = Direction.DOWN;
-					break;
-				case "d":
-				case "ArrowRight":
-					direction = Direction.RIGHT;
+			switch (action) {
+				case "respawn":
+					this.getSessionWithName(message.sessionName)?.respawnSnakeById(message.clientId);
 					break;
 				default:
 					break;
 			}
+		} else if (message.data.type === "ChangeDirection") {
+			let direction: Direction = message.data.direction;
 
 			if (direction != undefined && message.sessionName && message.clientId) {
 				this.getSessionWithName(message.sessionName)?.getSnake(message.clientId)?.changeDirection(direction);
@@ -171,10 +161,12 @@ export class Server {
 	 * @param {string} name - Name of the session.
 	 * @return {Session | null} Session with the given name, null if not found.
 	 */
-	private getSessionWithName(name: string): Session | null {
-		for (let session of this.sessions) {
-			if (session.name === name) {
-				return session;
+	private getSessionWithName(name: string | undefined): Session | null {
+		if (name) {
+			for (let session of this.sessions) {
+				if (session.name === name) {
+					return session;
+				}
 			}
 		}
 

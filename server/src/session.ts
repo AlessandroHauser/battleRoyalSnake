@@ -7,8 +7,8 @@ import {animals, colors, uniqueNamesGenerator} from "unique-names-generator";
 import {clearInterval} from "timers";
 
 export class Session {
-	public readonly FIELD_WIDTH: number = 10;
-	public readonly FIELD_HEIGHT: number = 10;
+	public readonly FIELD_WIDTH: number = 64;
+	public readonly FIELD_HEIGHT: number = 36;
 	public readonly MAX_PLAYERS: number = 8;
 
 	public readonly COUNTDOWN_TIME: number = 20000;
@@ -68,6 +68,19 @@ export class Session {
 		snake.alive = true;
 	}
 
+	public respawnSnake(snake: Snake | null): void {
+		if (snake) {
+			snake.setPosition(this.getSnakePosition());
+			snake.alive = true;
+		}
+	}
+
+	public respawnSnakeById(id: string | undefined): void {
+		if (id) {
+			this.respawnSnake(this.getSnake(id));
+		}
+	}
+
 	public removeSnake(snake: Snake | null): void {
 		if (snake) {
 			snake.alive = false;
@@ -75,8 +88,10 @@ export class Session {
 		}
 	}
 
-	public removeSnakeById(id: string): void {
-		this.removeSnake(this.getSnake(id));
+	public removeSnakeById(id: string | undefined): void {
+		if (id) {
+			this.removeSnake(this.getSnake(id));
+		}
 	}
   
   	public get apples(): Apple[] {
@@ -84,16 +99,21 @@ export class Session {
 	}
 
 	public spawnApples(): void {
-		for (let i: number = this.calculateApples(); i >= 0; i--) {
+		for (let i: number = this.calculateApples() - 1; i >= 0; i--) {
 			this._apples.push(new Apple(this.getApplePosition()));
 		}
 	}
 
 	public calculateApples(): number {
-		return Math.floor(
-			Math.random() *
-			Math.round(this._snakes.length * 0.75) - this._apples.length + 1
-		) - 1;
+		let amount: number = Math.floor(
+			Math.random() * ((this._snakes.length * 0.75)- this._apples.length)
+		);
+
+		if (amount + this.apples.length < 1) {
+			return amount + 1;
+		} else {
+			return amount;
+		}
 	}
 
 	public isJoinable(): boolean {
@@ -180,7 +200,13 @@ export class Session {
 			},
 			player: {},
 			apples: this._apples.map((apple: Apple) => { return apple.position; }),
-			snakes: this._snakes.map((snake: Snake): [number, number][] => { return snake.segments })
+			snakes: this._snakes.map((snake: Snake) => {
+				return {
+					position: snake.head,
+					direction: snake.direction,
+					segments: snake.segments
+				}
+			})
 		} as GameState;
 	}
 
@@ -269,10 +295,7 @@ export class Session {
 						clearInterval(this.sessionInterval);
 
 						this.spawnApples()
-						for (let snake of this.snakes) {
-							snake.setPosition(this.getSnakePosition());
-							snake.alive = true;
-						}
+						this.snakes.forEach((snake: Snake) => this.respawnSnake(snake));
 						this.broadcastGameState();
 
 

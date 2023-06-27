@@ -15,6 +15,10 @@ export interface GameState {
 		position: [number, number],
 		direction: Direction
 	},
-	snakes: [number, number][][],
+	snakes: {
+		position: [number, number],
+		direction: Direction,
+		segments: [number, number][]
+	}[],
 	apples: [number, number][]
 }

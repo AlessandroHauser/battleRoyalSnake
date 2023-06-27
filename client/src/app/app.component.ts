@@ -123,7 +123,7 @@ export class AppComponent implements OnInit {
 					break;
 			}
 
-			if (direction) {
+			if (direction != undefined) {
 				event.preventDefault();
 				this.clientService.sendUserInput(event.key, this.id, this.session, "direction", direction);
 			} else {

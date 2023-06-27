@@ -1,7 +1,8 @@
-import {Component, Input, OnInit, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {GameState} from "../../interfaces/game-state";
 import {SessionState} from "../../enums/session-state";
 import {round} from "@popperjs/core/lib/utils/math";
+import {Direction} from "../../enums/direction";
 
 @Component({
 	selector: 'app-field',
@@ -82,7 +83,7 @@ export class FieldComponent implements OnInit, OnChanges {
 			this.drawField(xOffset, yOffset);
 			if (gameState) {
 				this.drawApples(gameState.apples, xOffset, yOffset);
-				gameState.snakes.forEach((snake: [number, number][]): void => {
+				gameState.snakes.forEach((snake): void => {
 					this.drawSnake(snake, gameState.player.position, xOffset, yOffset);
 				});
 			}
@@ -111,19 +112,73 @@ export class FieldComponent implements OnInit, OnChanges {
 		});
 	}
 
-	private drawSnake(snake: [number, number][], playerHeadPos: [number, number], xOffset: number = 0, yOffset: number = 0): void {
-		snake.forEach((segment: [number, number]): void => {
+	private drawSnake(snake: { position: [number, number], direction: Direction, segments: [number, number][] }, playerHeadPos: [number, number], xOffset: number = 0, yOffset: number = 0): void {
+		snake.segments.forEach((segment: [number, number]): void => {
 			if (this.context && this.squareSize) {
-				this.context.fillStyle = "darkgreen";
-
-				if (snake.indexOf(segment) === 0) {
-					this.context.fillStyle = "lightgreen";
-					if (playerHeadPos && segment[0] === playerHeadPos[0] && segment[1] === playerHeadPos[1]) {
-						this.context.fillStyle = "yellow";
-					}
+				if (snake.segments.indexOf(segment) == 0 && playerHeadPos && segment[0] === playerHeadPos[0] && segment[1] === playerHeadPos[1]) {
+					this.context.fillStyle = "#2AFF2A";
+				} else {
+					this.context.fillStyle = "#22DF22";
 				}
 
 				this.context.fillRect(segment[0] * this.squareSize + xOffset, segment[1] * this.squareSize + yOffset, this.squareSize, this.squareSize);
+
+				if (snake.segments.indexOf(segment) == 0) {
+					this.context.fillStyle = "#000000";
+					if (snake.direction == Direction.UP) {
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize / 5,
+							segment[1] * this.squareSize + yOffset + this.squareSize / 10,
+							this.squareSize / 10,
+							this.squareSize / 5
+						);
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize - (this.squareSize / 5 + this.squareSize / 10),
+							segment[1] * this.squareSize + yOffset + this.squareSize / 10,
+							this.squareSize / 10,
+							this.squareSize / 5
+						);
+					} else if (snake.direction == Direction.DOWN) {
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize / 5,
+							segment[1] * this.squareSize + yOffset + this.squareSize - (this.squareSize / 10 + this.squareSize / 5),
+							this.squareSize / 10,
+							this.squareSize / 5
+						);
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize - (this.squareSize / 5 + this.squareSize / 10),
+							segment[1] * this.squareSize + yOffset + this.squareSize - (this.squareSize / 10 + this.squareSize / 5),
+							this.squareSize / 10,
+							this.squareSize / 5
+						);
+					} else if (snake.direction == Direction.LEFT) {
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize / 10,
+							segment[1] * this.squareSize + yOffset + this.squareSize / 5,
+							this.squareSize / 5,
+							this.squareSize / 10
+						);
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize / 10,
+							segment[1] * this.squareSize + yOffset + this.squareSize - (this.squareSize / 5 + this.squareSize / 10),
+							this.squareSize / 5,
+							this.squareSize / 10
+						);
+					} else if (snake.direction == Direction.RIGHT) {
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize - (this.squareSize / 10 + this.squareSize / 5),
+							segment[1] * this.squareSize + yOffset + this.squareSize / 5,
+							this.squareSize / 5,
+							this.squareSize / 10
+						);
+						this.context.fillRect(
+							segment[0] * this.squareSize + xOffset + this.squareSize - (this.squareSize / 10 + this.squareSize / 5),
+							segment[1] * this.squareSize + yOffset + this.squareSize - (this.squareSize / 5 + this.squareSize / 10),
+							this.squareSize / 5,
+							this.squareSize / 10
+						);
+					}
+				}
 			}
 		});
 	}
