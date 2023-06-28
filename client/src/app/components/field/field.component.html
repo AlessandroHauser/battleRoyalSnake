@@ -1,0 +1,12 @@
+<div class="field">
+	<div class="header">
+		<h1>Willkommen zu unserem Snake Battle Royale!<span *ngIf="lobbyName"> ({{lobbyName}})</span></h1>
+		<h2 *ngIf="sessionState == SessionState.STARTING || sessionState == SessionState.WAITING">Warten auf
+			Spieler</h2>
+		<div>
+			<h2 *ngIf="sessionState == SessionState.STARTING">{{countdown}}</h2>
+			<mat-progress-bar *ngIf="sessionState == SessionState.STARTING" mode="indeterminate"></mat-progress-bar>
+		</div>
+	</div>
+	<canvas id="field"></canvas>
+</div>
